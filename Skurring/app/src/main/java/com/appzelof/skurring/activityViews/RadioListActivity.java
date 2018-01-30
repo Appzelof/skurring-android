@@ -10,7 +10,9 @@ import android.view.View;
 import com.appzelof.skurring.Interface.RecyclerOnViewClickListener;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.adapters.RadioStationAdapter;
+import com.appzelof.skurring.radioObjects.RadioObject;
 import com.appzelof.skurring.radioObjects.RadioObjectListCreator;
+import java.util.ArrayList;
 
 public class RadioListActivity extends AppCompatActivity implements RecyclerOnViewClickListener {
 
@@ -19,10 +21,7 @@ public class RadioListActivity extends AppCompatActivity implements RecyclerOnVi
     private RecyclerView rv;
     private RadioObjectListCreator radioObjectListCreator;
     private Bundle extra;
-    private int button;
-    private int button2;
-
-
+    private ArrayList<RadioObject> radioObjects;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,7 +29,6 @@ public class RadioListActivity extends AppCompatActivity implements RecyclerOnVi
 
         radioStationAdapter = new RadioStationAdapter();
         setContentView(R.layout.activity_radiolist);
-
         extra = getIntent().getExtras();
 
         rv = (RecyclerView) findViewById(R.id.my_recycler_view);
@@ -44,7 +42,7 @@ public class RadioListActivity extends AppCompatActivity implements RecyclerOnVi
         initializeData();
         initializeAdapter();
         radioStationAdapter.setOnClick(this);
-
+        radioObjects = new ArrayList<>();
 
     }
 
@@ -53,13 +51,10 @@ public class RadioListActivity extends AppCompatActivity implements RecyclerOnVi
 
         radioObjectListCreator = new RadioObjectListCreator();
 
-
-
     }
 
 
     private void initializeAdapter() { rv.setAdapter(radioStationAdapter);
-
 
     }
 
@@ -68,9 +63,11 @@ public class RadioListActivity extends AppCompatActivity implements RecyclerOnVi
     public void onClick(View view, int position) {
 
         System.out.println(position);
-
+        this.radioObjects = radioObjects;
 
         Intent intent = new Intent(this, MainActivity.class);
+
+        extra = getIntent().getExtras();
 
         int radioImage = radioObjectListCreator.getList().get(position).getRadioImage();
         String radioName = radioObjectListCreator.getList().get(position).getName();
@@ -81,11 +78,36 @@ public class RadioListActivity extends AppCompatActivity implements RecyclerOnVi
         intent.putExtra("radioURL", radioURL);
 
 
+        RadioObject radioObject = new RadioObject(radioName, radioURL, radioImage);
+
+
+        if (extra.getInt("button") == 1) {
+            intent.putExtra("btn1", 1);
+        }
+
+        if (extra.getInt("button2") == 2) {
+            intent.putExtra("btn2", 2);
+        }
+
+        if (extra.getInt("button3") == 3) {
+            intent.putExtra("btn3", 3);
+        }
+
+        if (extra.getInt("button4") == 4) {
+            intent.putExtra("btn4", 4);
+        }
+
+        if (extra.getInt("button5") == 5) {
+            intent.putExtra("btn5", 5);
+        }
+
+        if (extra.getInt("button6") == 6) {
+            intent.putExtra("btn6", 6);
+        }
+
         startActivity(intent);
 
     }
-
-
 
     @Override
     public void onClick(View v) {

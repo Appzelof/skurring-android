@@ -37,9 +37,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         initializeData();
 
+
     }
 
     private void initializeData() {
+
 
         soundPlayer = new SoundPlayer();
         imageView = (ImageView) findViewById(R.id.my_play_image);
@@ -48,9 +50,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         textView.setText(getRadioName());
         imageView.setImageResource(getRadioImage());
-
         urlStream = Uri.parse(getRadioURL());
         soundPlayer.play(getApplicationContext(), urlStream);
+
+
 
         playView.setOnClickListener(this);
 
@@ -70,10 +73,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
 
-
-
     }
-
 
     private int getRadioImage(){
         Bundle extra = getIntent().getExtras();
