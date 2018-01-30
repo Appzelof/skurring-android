@@ -1,6 +1,7 @@
 package com.appzelof.skurring.activityViews;
 
 import android.content.Intent;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,13 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
 
     private ImageButton btn;
+    private ImageButton btn2;
+    private ImageButton btn3;
+    private ImageButton btn4;
+    private ImageButton btn5;
+    private ImageButton btn6;
+    private ImageButton btn7;
+
     private FirebaseAnalytics firebaseAnalytics;
 
     private String radioName;
@@ -37,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.button1:
                 sendButtonData();
                 break;
+            case R.id.button2:
+                sendButtonData();
         }
 
     }
@@ -51,6 +61,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                intent.putExtra("button", 1);
                 startActivity(intent);
                 break;
+            case R.id.button2:
+                startActivity(intent);
+                break;
+            case R.id.button3:
+                startActivity(intent);
+                break;
+            case R.id.button4:
+                startActivity(intent);
+                break;
+            case R.id.button5:
+                startActivity(intent);
+                break;
+            case R.id.button6:
+                startActivity(intent);
+                break;
         }
         return false;
     }
@@ -60,10 +85,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         btn = (ImageButton) findViewById(R.id.button1);
+        btn2 = (ImageButton) findViewById(R.id.button2);
+        btn3 =  (ImageButton) findViewById(R.id.button3);
+        btn4 = (ImageButton) findViewById(R.id.button4);
+        btn5 = (ImageButton) findViewById(R.id.button5);
+        btn6 = (ImageButton) findViewById(R.id.button6);
+        btn7 = (ImageButton) findViewById(R.id.button7);
 
         btn.setOnClickListener(this);
         btn.setOnLongClickListener(this);
 
+        btn2.setOnClickListener(this);
+        btn2.setOnLongClickListener(this);
+
+        btn3.setOnClickListener(this);
+        btn3.setOnLongClickListener(this);
+
+        btn4.setOnClickListener(this);
+        btn4.setOnLongClickListener(this);
+
+        btn5.setOnClickListener(this);
+        btn5.setOnLongClickListener(this);
+
+        btn6.setOnClickListener(this);
+        btn6.setOnLongClickListener(this);
+
+        btn7.setOnClickListener(this);
+        btn7.setOnLongClickListener(this);
 
 
 
@@ -87,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             int radioImage = extra.getInt("radioImage");
 
             btn.setImageResource(radioImage);
-            btn.getAnimation();
+
 
 
         }
