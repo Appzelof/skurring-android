@@ -21,6 +21,7 @@
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
         android:background="@drawable/ripple_effect"
+        android:contentDescription="@radio_button"
         android:cropToPadding="true"
         android:padding="20dp"
         android:scaleType="centerInside"

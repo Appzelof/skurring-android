@@ -20,6 +20,7 @@ public class SoundPlayer {
 
     private MediaPlayer mediaPlayer;
 
+
     public SoundPlayer(){
 
         mediaPlayer = new MediaPlayer();
@@ -59,14 +60,14 @@ public class SoundPlayer {
 
     }
 
-    public boolean stop() {
+    public void stop() {
 
-
-
+        if (mediaPlayer != null){
             mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
 
-
-        return true;
     }
 
 }

@@ -1,21 +1,18 @@
 package com.appzelof.skurring.activityViews;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.TinyDB.TinyDB;
-import com.appzelof.skurring.radioObjects.ObjectSerializer;
 import com.appzelof.skurring.radioObjects.RadioObject;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -37,12 +34,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String radioName;
     private String radioURL;
     private int radioImage;
+    private Vibrator vibrator;
+    private Animation slideUpAnim, slideDownAnim;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         initializeData();
         loadButtonData();
@@ -133,26 +134,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.button1:
                 intent.putExtra("button", 1);
+                vibes();
                 startActivity(intent);
                 break;
             case R.id.button2:
                 intent.putExtra("button2", 2);
+                vibes();
                 startActivity(intent);
                 break;
             case R.id.button3:
                 intent.putExtra("button3", 3);
+                vibes();
                 startActivity(intent);
                 break;
             case R.id.button4:
                 intent.putExtra("button4", 4);
+                vibes();
                 startActivity(intent);
                 break;
             case R.id.button5:
                 intent.putExtra("button5", 5);
+                vibes();
                 startActivity(intent);
                 break;
             case R.id.button6:
                 intent.putExtra("button6", 6);
+                vibes();
                 startActivity(intent);
                 break;
         }
@@ -165,6 +172,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         list = new ArrayList<>();
         tinyDB = new TinyDB(this);
+
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+
 
         btn = (ImageButton) findViewById(R.id.button1);
         btn2 = (ImageButton) findViewById(R.id.button2);
@@ -290,6 +300,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             btn6.setImageResource(R.drawable.hold);
         }
+    }
+
+    public void vibes() {
+        vibrator.vibrate(1);
     }
 
 

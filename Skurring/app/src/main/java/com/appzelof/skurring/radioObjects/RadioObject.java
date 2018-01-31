@@ -2,6 +2,7 @@ package com.appzelof.skurring.radioObjects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.Vibrator;
 
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ public class RadioObject implements Serializable {
     private String url;
     private String name;
     private int radioImage;
+
 
     public RadioObject(String name, String url, int radioImage){
         setName(name);
