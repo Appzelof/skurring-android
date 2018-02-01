@@ -3,4 +3,5 @@
     <string name="button">Button</string>
     <string name="string_button">Button</string>
     <string name="string_p4">P4</string>
+    <string name="switch_btn">Switch</string>
 </resources>

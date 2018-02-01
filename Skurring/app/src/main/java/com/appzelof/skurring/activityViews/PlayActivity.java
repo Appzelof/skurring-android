@@ -1,37 +1,23 @@
 package com.appzelof.skurring.activityViews;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.MediaController;
+import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.mediaPlayer.SoundPlayer;
 
-import org.w3c.dom.Text;
-
-import java.io.IOException;
-import java.net.URI;
 
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener, AudioManager.OnAudioFocusChangeListener {
 
     private View playView;
     private SoundPlayer soundPlayer;
-    private ImageView imageView;
+    private ImageView imageView, speedImageView;
     private TextView textView;
     private String radioURL;
     private String radioName;
@@ -45,7 +31,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         initializeData();
-
     }
 
     private void initializeData() {
@@ -55,6 +40,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         soundPlayer = new SoundPlayer();
         imageView = (ImageView) findViewById(R.id.my_play_image);
+        speedImageView = (ImageView) findViewById(R.id.speed_image);
         textView = (TextView) findViewById(R.id.my_radio_play_name);
         playView = (View) findViewById(R.id.playView);
 
@@ -62,7 +48,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         imageView.setImageResource(getRadioImage());
         urlStream = Uri.parse(getRadioURL());
         soundPlayer.play(getApplicationContext(), urlStream);
-
 
         playView.setOnClickListener(this);
 
@@ -132,4 +117,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             soundPlayer.play(getApplicationContext(), urlStream);
         }
     }
+
+
 }

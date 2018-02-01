@@ -18,16 +18,10 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
 
-    private ImageButton btn;
-    private ImageButton btn2;
-    private ImageButton btn3;
-    private ImageButton btn4;
-    private ImageButton btn5;
-    private ImageButton btn6;
-    private ImageButton btn7;
+    private ImageButton btn, btn2, btn3, btn4, btn5, btn6, btn7;
+
 
     private FirebaseAnalytics firebaseAnalytics;
-
     public static ArrayList<RadioObject> list;
     public static TinyDB tinyDB;
 
@@ -35,7 +29,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String radioURL;
     private int radioImage;
     private Vibrator vibrator;
-    private Animation slideUpAnim, slideDownAnim;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -303,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void vibes() {
-        vibrator.vibrate(1);
+        vibrator.vibrate(5);
     }
 
 
