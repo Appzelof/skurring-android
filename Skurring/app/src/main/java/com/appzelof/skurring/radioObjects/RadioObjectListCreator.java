@@ -19,7 +19,6 @@ public class RadioObjectListCreator {
 
         radioArrayList = new ArrayList<>();
 
-
         radioArrayList.add(new RadioObject("NRK MP3" ,"http://lyd.nrk.no/nrk_radio_mp3_mp3_h", R.drawable.nrk_mp3));
         radioArrayList.add(new RadioObject("NRK Klassisk","http://lyd.nrk.no/nrk_radio_klassisk_mp3_h",R.drawable.nrk_klassisk));
         radioArrayList.add(new RadioObject("NRK Alltid Nyheter", "http://lyd.nrk.no/nrk_radio_alltid_nyheter_mp3_h",R.drawable.nrk_alltidnyheter));
@@ -82,7 +81,6 @@ public class RadioObjectListCreator {
         radioArrayList.add(new RadioObject("Rox 90.1", "http://stream.radiorox.no:8040/listen", R.drawable.rox));
         radioArrayList.add(new RadioObject("Scansat", "http://stream.radioh.no:443/scan128", R.drawable.scansat));
         radioArrayList.add(new RadioObject("Ordentlig Radio", "http://mms-live.online.no/oradio_mp3_m", R.drawable.ordentlig));
-
 
 
         return radioArrayList;
