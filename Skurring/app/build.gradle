@@ -32,8 +32,11 @@ dependencies {
     compile files('picasso-2.5.2.jar')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.android.support:animated-vector-drawable:25.4.0'
     compile 'com.google.firebase:firebase-core:11.8.0'
     compile 'com.google.code.gson:gson:2.8.1'
+    compile 'com.google.android.gms:play-services-ads:11.8.0'
+    compile 'com.anjlab.android.iab.v3:library:1.0.44'
     testCompile 'junit:junit:4.12'
 }
 

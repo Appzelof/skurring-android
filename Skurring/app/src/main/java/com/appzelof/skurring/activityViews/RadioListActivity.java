@@ -10,8 +10,8 @@ import android.view.View;
 import com.appzelof.skurring.Interface.RecyclerOnViewClickListener;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.adapters.RadioStationAdapter;
-import com.appzelof.skurring.radioObjects.RadioObject;
-import com.appzelof.skurring.radioObjects.RadioObjectListCreator;
+import com.appzelof.skurring.model.RadioObject;
+import com.appzelof.skurring.model.RadioObjectListCreator;
 import java.util.ArrayList;
 
 public class RadioListActivity extends AppCompatActivity implements RecyclerOnViewClickListener {
@@ -62,6 +62,7 @@ public class RadioListActivity extends AppCompatActivity implements RecyclerOnVi
     @Override
     public void onClick(View view, int position) {
 
+
         System.out.println(position);
         this.radioObjects = radioObjects;
 
@@ -79,6 +80,7 @@ public class RadioListActivity extends AppCompatActivity implements RecyclerOnVi
 
 
         RadioObject radioObject = new RadioObject(radioName, radioURL, radioImage);
+
 
 
         if (extra.getInt("button") == 1) {
@@ -105,7 +107,9 @@ public class RadioListActivity extends AppCompatActivity implements RecyclerOnVi
             intent.putExtra("btn6", 6);
         }
 
+        finish();
         startActivity(intent);
+
 
     }
 

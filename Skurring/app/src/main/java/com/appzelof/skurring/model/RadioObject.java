@@ -1,8 +1,4 @@
-package com.appzelof.skurring.radioObjects;
-
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.os.Vibrator;
+package com.appzelof.skurring.model;
 
 import java.io.Serializable;
 

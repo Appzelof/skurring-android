@@ -6,8 +6,12 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:orientation="horizontal"
-    tools:context="com.appzelof.skurring.activityViews.RadioListActivity">
+    tools:context="com.appzelof.skurring.activityViews.RadioListActivity"><![CDATA[
 
+
+        /SearchView>
+
+        ]]>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/my_recycler_view"

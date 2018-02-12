@@ -5,12 +5,13 @@ import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.TinyDB.TinyDB;
-import com.appzelof.skurring.radioObjects.RadioObject;
+import com.appzelof.skurring.model.RadioObject;
+import com.google.android.gms.ads.AdRequest;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         initializeData();
         loadButtonData();
         updateButtonUI();
@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(this, PlayActivity.class);
 
         Bundle extra = getIntent().getExtras();
+
 
             switch (v.getId()) {
 
@@ -114,6 +115,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         startActivity(intent);
                     }
                     break;
+
+                case R.id.button7:
+                    Toast.makeText(this, "Comming soon", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -123,6 +127,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onLongClick(View v) {
 
         Intent intent = new Intent(this, RadioListActivity.class);
+
+        finish();
 
         switch (v.getId()) {
             case R.id.button1:
@@ -167,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tinyDB = new TinyDB(this);
 
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-
 
         btn = (ImageButton) findViewById(R.id.button1);
         btn2 = (ImageButton) findViewById(R.id.button2);

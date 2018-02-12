@@ -1,11 +1,8 @@
-package com.appzelof.skurring.radioObjects;
-
-import android.provider.MediaStore;
+package com.appzelof.skurring.model;
 
 import com.appzelof.skurring.R;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Created by daniel on 27/11/2017.

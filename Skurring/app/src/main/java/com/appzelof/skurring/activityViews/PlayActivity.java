@@ -3,6 +3,7 @@ package com.appzelof.skurring.activityViews;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -10,23 +11,39 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.TransactionDetails;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.mediaPlayer.SoundPlayer;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.squareup.picasso.Picasso;
 
 
-public class PlayActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+import java.util.Locale;
+
+
+public class PlayActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, BillingProcessor.IBillingHandler{
 
     private View playView;
     private SoundPlayer soundPlayer;
@@ -40,8 +57,12 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private final int PERMISION_ALL = 1;
     private final String[] PERMISSIONS = {Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
     private TextView speedTxt;
-    private Switch aSwitch;
+    private SwitchCompat aSwitch;
     private Context context;
+    private AdView myBannerAdView;
+    private AdRequest adRequest;
+    private BillingProcessor bp;
+    private ImageButton premBtn;
 
 
 
@@ -50,6 +71,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         initializeData();
+        loadAds();
 
 
         LocationListener locationListener = new LocationListener() {
@@ -99,7 +121,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private void initializeData() {
 
 
-
         soundPlayer = new SoundPlayer();
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         imageView = (ImageView) findViewById(R.id.my_play_image);
@@ -108,7 +129,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         speedTxt = (TextView) findViewById(R.id.speedTextView);
         playView = (View) findViewById(R.id.playView);
         locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
-        aSwitch = (Switch) findViewById(R.id.switch1);
+        myBannerAdView = (AdView) findViewById(R.id.adView);
+        aSwitch = (SwitchCompat) findViewById(R.id.switch1);
+
+        premBtn = (ImageButton) findViewById(R.id.prem_btn);
+        premBtn.setOnClickListener(this);
 
 
         textView.setText(getRadioName());
@@ -118,6 +143,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         playView.setOnClickListener(this);
         aSwitch.setOnCheckedChangeListener(this);
+        bp = new BillingProcessor(this, null,this);
+
+
+        Typeface customFont  = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
+        speedTxt.setTypeface(customFont);
 
 
 
@@ -132,6 +162,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 soundPlayer.stop();
                 goBack();
                 break;
+            case R.id.prem_btn:
+                bp.purchase(this, "android test purchase");
+
         }
 
     }
@@ -180,12 +213,76 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             Picasso.with(this).load(R.drawable.green_speed).into(speedImageView);
             speedTxt.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.INVISIBLE);
+            Toast.makeText(this, "Speedometer aktivert", Toast.LENGTH_SHORT).show();
         } else {
             Picasso.with(this).load(R.drawable.speed).into(speedImageView);
             speedTxt.setVisibility(View.INVISIBLE);
             imageView.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "Speedometer deaktivert", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        soundPlayer.stop();
+        goBack();
+
+    }
+
+    private void loadAds() {
+        MobileAds.initialize(this, "\n" +
+                "ca-app-pub-5770694165805669/3714218614");
+
+        adRequest = new AdRequest.Builder().build();
+        myBannerAdView.loadAd(adRequest);
+    }
+
+
+    public void removeAds() {
+        speedTxt.setVisibility(View.VISIBLE);
+        aSwitch.setVisibility(View.VISIBLE);
+        myBannerAdView.setVisibility(View.INVISIBLE);
+        premBtn.setVisibility(View.INVISIBLE);
+
+    }
+
+
+    @Override
+    public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
+        Toast.makeText(this, "purchased", Toast.LENGTH_SHORT).show();
+        removeAds();
+    }
+
+    @Override
+    public void onPurchaseHistoryRestored() {
+
+    }
+
+    @Override
+    public void onBillingError(int errorCode, @Nullable Throwable error) {
+
+    }
+
+    @Override
+    public void onBillingInitialized() {
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!bp.handleActivityResult(requestCode, resultCode, data));
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (bp != null) {
+            bp.release();
+
+            super.onDestroy();
+        }
     }
 }
 
