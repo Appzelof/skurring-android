@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.appzelof.skurring.R;
+import com.appzelof.skurring.TinyDB.TinyDB;
 import com.appzelof.skurring.mediaPlayer.SoundPlayer;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -62,7 +63,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private AdView myBannerAdView;
     private AdRequest adRequest;
     private BillingProcessor bp;
-    private ImageButton premBtn;
+    private Button premBtn;
+    private TinyDB tinyDB;
 
 
 
@@ -72,6 +74,48 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_play);
         initializeData();
         loadAds();
+    }
+
+    private void initializeData() {
+
+
+        soundPlayer = new SoundPlayer();
+
+        imageView = (ImageView) findViewById(R.id.my_play_image);
+        speedImageView = (ImageView) findViewById(R.id.speed_image);
+
+        textView = (TextView) findViewById(R.id.my_radio_play_name);
+        speedTxt = (TextView) findViewById(R.id.speedTextView);
+
+        playView = (View) findViewById(R.id.playView);
+        locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
+        myBannerAdView = (AdView) findViewById(R.id.adView);
+
+        aSwitch = (SwitchCompat) findViewById(R.id.switch1);
+        premBtn = (Button) findViewById(R.id.prem_btn);
+        premBtn.setOnClickListener(this);
+        playView.setOnClickListener(this);
+        aSwitch.setOnCheckedChangeListener(this);
+
+        textView.setText(getRadioName());
+        imageView.setImageResource(getRadioImage());
+        urlStream = Uri.parse(getRadioURL());
+        soundPlayer.play(getApplicationContext(), urlStream);
+
+
+        bp = new BillingProcessor(this, null,this);
+
+
+
+        Typeface customFont  = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
+        speedTxt.setTypeface(customFont);
+
+
+        tinyDB = new TinyDB(this);
+
+        if (tinyDB.getBoolean("saveP") == true) {
+            removeAds();
+        }
 
 
         LocationListener locationListener = new LocationListener() {
@@ -81,11 +125,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 double kMH = location.getSpeed() * 3.6;
 
                 if (aSwitch.isChecked()){
-                speedTxt.setText(String.valueOf(Math.round(kMH)));
+                    speedTxt.setText(String.valueOf(Math.round(kMH)));
 
-                if (kMH < 1) {
-                    speedTxt.setText("0");
-                }
+                    if (kMH < 1) {
+                        speedTxt.setText("0");
+                    }
 
                 }
 
@@ -113,43 +157,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
             return;
         }
-        
+
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
-
-    }
-
-    private void initializeData() {
-
-
-        soundPlayer = new SoundPlayer();
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        imageView = (ImageView) findViewById(R.id.my_play_image);
-        speedImageView = (ImageView) findViewById(R.id.speed_image);
-        textView = (TextView) findViewById(R.id.my_radio_play_name);
-        speedTxt = (TextView) findViewById(R.id.speedTextView);
-        playView = (View) findViewById(R.id.playView);
-        locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
-        myBannerAdView = (AdView) findViewById(R.id.adView);
-        aSwitch = (SwitchCompat) findViewById(R.id.switch1);
-
-        premBtn = (ImageButton) findViewById(R.id.prem_btn);
-        premBtn.setOnClickListener(this);
-
-
-        textView.setText(getRadioName());
-        imageView.setImageResource(getRadioImage());
-        urlStream = Uri.parse(getRadioURL());
-        soundPlayer.play(getApplicationContext(), urlStream);
-
-        playView.setOnClickListener(this);
-        aSwitch.setOnCheckedChangeListener(this);
-        bp = new BillingProcessor(this, null,this);
-
-
-        Typeface customFont  = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
-        speedTxt.setTypeface(customFont);
-
-
 
     }
 
@@ -163,8 +172,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 goBack();
                 break;
             case R.id.prem_btn:
-                bp.purchase(this, "android test purchase");
-
+                bp.purchase(this, "android.test.purchased");
         }
 
     }
@@ -240,12 +248,14 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public void removeAds() {
-        speedTxt.setVisibility(View.VISIBLE);
+    public boolean removeAds() {
+        speedImageView.setVisibility(View.VISIBLE);
         aSwitch.setVisibility(View.VISIBLE);
         myBannerAdView.setVisibility(View.INVISIBLE);
         premBtn.setVisibility(View.INVISIBLE);
 
+
+        return true;
     }
 
 
@@ -253,10 +263,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
         Toast.makeText(this, "purchased", Toast.LENGTH_SHORT).show();
         removeAds();
+
+        if (removeAds() == true) {
+            tinyDB.putBoolean("saveP", removeAds());
+        }
     }
 
     @Override
     public void onPurchaseHistoryRestored() {
+
 
     }
 

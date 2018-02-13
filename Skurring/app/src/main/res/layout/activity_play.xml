@@ -8,6 +8,24 @@
     android:background="@drawable/ripple_effect2"
     tools:context="com.appzelof.skurring.activityViews.PlayActivity">
 
+    <Button
+        android:id="@+id/prem_btn"
+        android:layout_width="180dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="56dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/buypremium"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/my_play_image"
+        app:layout_constraintVertical_bias="0.546"
+        app:srcCompat="@drawable/buypremium" />
+
     <ImageView
         android:id="@+id/my_play_image"
         android:layout_width="300dp"
@@ -106,24 +124,6 @@
         ads:layout_constraintEnd_toEndOf="parent"
         ads:layout_constraintStart_toStartOf="parent">
     </com.google.android.gms.ads.AdView>
-
-    <ImageButton
-        android:id="@+id/prem_btn"
-        android:layout_width="180dp"
-        android:layout_height="200dp"
-        android:layout_marginBottom="56dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@android:color/transparent"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/my_play_image"
-        app:layout_constraintVertical_bias="0.546"
-        app:srcCompat="@drawable/buypremium" />
 
 
 </android.support.constraint.ConstraintLayout>
