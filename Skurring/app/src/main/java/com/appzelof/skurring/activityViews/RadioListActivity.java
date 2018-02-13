@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.appzelof.skurring.Interface.RecyclerOnViewClickListener;
 import com.appzelof.skurring.R;
@@ -26,12 +27,13 @@ public class RadioListActivity extends AppCompatActivity implements RecyclerOnVi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         radioStationAdapter = new RadioStationAdapter();
         setContentView(R.layout.activity_radiolist);
         extra = getIntent().getExtras();
 
-        rv = (RecyclerView) findViewById(R.id.my_recycler_view);
+        rv = (RecyclerView) findViewById(R.id.radiolist_recyclerview);
         rv.setOnClickListener(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

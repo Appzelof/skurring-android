@@ -32,10 +32,6 @@ public class RadioStationAdapter extends RecyclerView.Adapter<RadioStationAdapte
         private TextView radioName;
         private ImageView radioImage;
 
-
-
-
-
         public RadioStationViewHolder(View v ){
             super(v);
             radioName = (TextView) v.findViewById(R.id.my_text);
@@ -43,29 +39,21 @@ public class RadioStationAdapter extends RecyclerView.Adapter<RadioStationAdapte
 
         }
 
-
     }
-
-
 
     public RadioStationAdapter(){
         radioObjectListCreator = new RadioObjectListCreator();
 
-
-
     }
-
 
     @Override
     public RadioStationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_radiolist, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_radio_cards, parent, false);
         RadioStationViewHolder pvh = new RadioStationViewHolder(v);
         v.setBackgroundColor(Color.BLACK);
 
         return pvh;
-
-
 
     }
 
@@ -86,9 +74,6 @@ public class RadioStationAdapter extends RecyclerView.Adapter<RadioStationAdapte
             recyclerOnViewClickListener.onClick(v,position);
             }
         });
-
-
-
     }
 
     @Override

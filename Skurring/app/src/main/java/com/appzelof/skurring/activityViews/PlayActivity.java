@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -72,9 +73,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         initializeData();
         loadAds();
+        loadAllreadyBuyedPurchase();
     }
+
 
     private void initializeData() {
 
@@ -113,9 +118,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         tinyDB = new TinyDB(this);
 
-        if (tinyDB.getBoolean("saveP") == true) {
-            removeAds();
-        }
 
 
         LocationListener locationListener = new LocationListener() {
@@ -162,6 +164,32 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void loadAds() {
+        MobileAds.initialize(this, "\n" +
+                "ca-app-pub-5770694165805669/3714218614");
+
+        adRequest = new AdRequest.Builder().build();
+        myBannerAdView.loadAd(adRequest);
+    }
+
+    private void loadAllreadyBuyedPurchase() {
+
+        if (tinyDB.getBoolean("saveP") == true) {
+            removeAds();
+        }
+    }
+
+
+    public boolean removeAds() {
+        speedImageView.setVisibility(View.VISIBLE);
+        aSwitch.setVisibility(View.VISIBLE);
+        myBannerAdView.setVisibility(View.INVISIBLE);
+        premBtn.setVisibility(View.INVISIBLE);
+
+
+        return true;
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -183,7 +211,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         if (extra != null) {
             radioImage = extra.getInt("radioImage");
         }
-
 
         return radioImage;
     }
@@ -237,25 +264,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         soundPlayer.stop();
         goBack();
 
-    }
-
-    private void loadAds() {
-        MobileAds.initialize(this, "\n" +
-                "ca-app-pub-5770694165805669/3714218614");
-
-        adRequest = new AdRequest.Builder().build();
-        myBannerAdView.loadAd(adRequest);
-    }
-
-
-    public boolean removeAds() {
-        speedImageView.setVisibility(View.VISIBLE);
-        aSwitch.setVisibility(View.VISIBLE);
-        myBannerAdView.setVisibility(View.INVISIBLE);
-        premBtn.setVisibility(View.INVISIBLE);
-
-
-        return true;
     }
 
 
