@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         intent.putExtra("radioName", tinyDB.getString("name"));
                         intent.putExtra("radioURL", tinyDB.getString("url"));
                         startActivity(intent);
+                    } else {
+                        showToast();
                     }
 
                     break;
@@ -74,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         intent.putExtra("radioName", tinyDB.getString("name2"));
                         intent.putExtra("radioURL", tinyDB.getString("url2"));
                         startActivity(intent);
+                    } else {
+                        showToast();
                     }
                     break;
 
@@ -85,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         intent.putExtra("radioName", tinyDB.getString("name3"));
                         intent.putExtra("radioURL", tinyDB.getString("url3"));
                         startActivity(intent);
+                    } else {
+                        showToast();
                     }
                     break;
 
@@ -95,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         intent.putExtra("radioName", tinyDB.getString("name4"));
                         intent.putExtra("radioURL", tinyDB.getString("url4"));
                         startActivity(intent);
+                    } else {
+                        showToast();
                     }
                     break;
 
@@ -105,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         intent.putExtra("radioName", tinyDB.getString("name5"));
                         intent.putExtra("radioURL", tinyDB.getString("url5"));
                         startActivity(intent);
+                    } else {
+                        showToast();
                     }
                     break;
 
@@ -115,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         intent.putExtra("radioName", tinyDB.getString("name6"));
                         intent.putExtra("radioURL", tinyDB.getString("url6"));
                         startActivity(intent);
+                    } else {
+                        showToast();
                     }
                     break;
 
@@ -300,6 +312,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             btn6.setImageResource(R.drawable.hold);
         }
+    }
+
+    private void showToast() {
+        Toast.makeText(this, "Hold knappen inne", Toast.LENGTH_SHORT).show();
     }
 
     public void vibes() {

@@ -25,12 +25,7 @@ public class SoundPlayer {
 
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-
     }
-
-
-
 
     public void play(Context context, Uri uri){
 
@@ -59,6 +54,7 @@ public class SoundPlayer {
 
 
     }
+
 
     public void stop() {
 

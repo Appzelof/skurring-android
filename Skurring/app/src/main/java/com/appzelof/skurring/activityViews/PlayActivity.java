@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -49,8 +50,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private View playView;
     private SoundPlayer soundPlayer;
-    private ImageView imageView, speedImageView;
-    private TextView textView;
+    private ImageView imageView, speedImageView, weatherImage;
+    private TextView textView, speedTxt, kmText, cityText, tempText;
     private String radioURL;
     private String radioName;
     private int radioImage;
@@ -58,7 +59,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private LocationManager locationManager;
     private final int PERMISION_ALL = 1;
     private final String[] PERMISSIONS = {Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-    private TextView speedTxt;
     private SwitchCompat aSwitch;
     private Context context;
     private AdView myBannerAdView;
@@ -66,8 +66,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private BillingProcessor bp;
     private Button premBtn;
     private TinyDB tinyDB;
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,7 +75,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         initializeData();
         loadAds();
-        loadAllreadyBuyedPurchase();
+        loadAlreadyPurchased();
+        loadCheckedState();
     }
 
 
@@ -87,10 +86,14 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         soundPlayer = new SoundPlayer();
 
         imageView = (ImageView) findViewById(R.id.my_play_image);
+        weatherImage = (ImageView) findViewById(R.id.my_weather_img);
         speedImageView = (ImageView) findViewById(R.id.speed_image);
 
         textView = (TextView) findViewById(R.id.my_radio_play_name);
         speedTxt = (TextView) findViewById(R.id.speedTextView);
+        kmText = (TextView) findViewById(R.id.my_km_text);
+        cityText = (TextView) findViewById(R.id.my_city_text);
+        tempText = (TextView) findViewById(R.id.my_temp_text);
 
         playView = (View) findViewById(R.id.playView);
         locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
@@ -98,6 +101,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         aSwitch = (SwitchCompat) findViewById(R.id.switch1);
         premBtn = (Button) findViewById(R.id.prem_btn);
+
         premBtn.setOnClickListener(this);
         playView.setOnClickListener(this);
         aSwitch.setOnCheckedChangeListener(this);
@@ -110,15 +114,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         bp = new BillingProcessor(this, null,this);
 
-
-
         Typeface customFont  = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
         speedTxt.setTypeface(customFont);
+        kmText.setTypeface(customFont);
 
 
         tinyDB = new TinyDB(this);
-
-
+        tinyDB.putString("stream", getRadioURL());
 
         LocationListener locationListener = new LocationListener() {
             @Override
@@ -128,6 +130,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
                 if (aSwitch.isChecked()){
                     speedTxt.setText(String.valueOf(Math.round(kMH)));
+                    ;
 
                     if (kMH < 1) {
                         speedTxt.setText("0");
@@ -172,10 +175,19 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         myBannerAdView.loadAd(adRequest);
     }
 
-    private void loadAllreadyBuyedPurchase() {
+    private void loadAlreadyPurchased() {
 
         if (tinyDB.getBoolean("saveP") == true) {
             removeAds();
+        }
+    }
+
+    private void loadCheckedState() {
+        if (tinyDB.getBoolean("checked") == true) {
+            aSwitch.setChecked(true);
+
+        } else if (tinyDB.getBoolean("checked") == false) {
+            aSwitch.setChecked(false);
         }
     }
 
@@ -185,7 +197,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         aSwitch.setVisibility(View.VISIBLE);
         myBannerAdView.setVisibility(View.INVISIBLE);
         premBtn.setVisibility(View.INVISIBLE);
-
+        weatherImage.setVisibility(View.VISIBLE);
+        tempText.setVisibility(View.VISIBLE);
+        cityText.setVisibility(View.VISIBLE);
 
         return true;
     }
@@ -221,6 +235,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         if (extra != null) {
             radioURL = extra.getString("radioURL");
             System.out.println(radioURL);
+
         }
 
         return radioURL;
@@ -247,12 +262,17 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         if (aSwitch.isChecked()) {
             Picasso.with(this).load(R.drawable.green_speed).into(speedImageView);
             speedTxt.setVisibility(View.VISIBLE);
+            kmText.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.INVISIBLE);
+            tinyDB.putBoolean("checked", true);
             Toast.makeText(this, "Speedometer aktivert", Toast.LENGTH_SHORT).show();
+
         } else {
             Picasso.with(this).load(R.drawable.speed).into(speedImageView);
             speedTxt.setVisibility(View.INVISIBLE);
             imageView.setVisibility(View.VISIBLE);
+            kmText.setVisibility(View.INVISIBLE);
+            tinyDB.putBoolean("checked", false);
             Toast.makeText(this, "Speedometer deaktivert", Toast.LENGTH_SHORT).show();
         }
 
@@ -307,6 +327,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             super.onDestroy();
         }
     }
+
 }
 
 

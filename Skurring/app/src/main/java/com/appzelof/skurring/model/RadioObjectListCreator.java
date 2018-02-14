@@ -75,7 +75,6 @@ public class RadioObjectListCreator {
         radioArrayList.add(new RadioObject("Solør+", "http://109.169.96.11:8000/solorpluss.mp3", R.drawable.solorp));
         radioArrayList.add(new RadioObject("Solor", "http://109.169.96.11:8000/solor.mp3", R.drawable.solor_radio));
         radioArrayList.add(new RadioObject("Trysilradioen", "http://109.169.96.11:8000/trysil.mp3", R.drawable.trysilradioen));
-        radioArrayList.add(new RadioObject("Rox 90.1", "http://stream.radiorox.no:8040/listen", R.drawable.rox));
         radioArrayList.add(new RadioObject("Scansat", "http://stream.radioh.no:443/scan128", R.drawable.scansat));
         radioArrayList.add(new RadioObject("Ordentlig Radio", "http://mms-live.online.no/oradio_mp3_m", R.drawable.ordentlig));
 
