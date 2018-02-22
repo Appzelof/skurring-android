@@ -12,18 +12,18 @@
         android:id="@+id/prem_btn"
         android:layout_width="180dp"
         android:layout_height="200dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="200dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="292dp"
+        android:layout_marginTop="100dp"
         android:background="@drawable/buypremium"
         android:scaleType="fitCenter"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.373"
+        app:layout_constraintTop_toBottomOf="@+id/speedTextView"
         app:srcCompat="@drawable/buypremium" />
 
     <ImageView
@@ -42,20 +42,6 @@
         app:srcCompat="@drawable/p4"
         tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/my_radio_play_name"
-        android:layout_width="wrap_content"
-        android:layout_height="41dp"
-        android:layout_marginTop="52dp"
-        android:fontFamily="sans-serif"
-        android:text="@string/string_p4"
-        android:textAlignment="center"
-        android:textColor="@android:color/white"
-        android:textSize="30sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/speed_image"
         android:layout_width="150dp"
@@ -68,6 +54,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/speed" />
+
+    <ImageView
+        android:id="@+id/my_weather_img"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="236dp"
+        android:layout_marginStart="68dp"
+        android:scaleType="fitCenter"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/speed_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.34"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/my_city_text"
+        app:layout_constraintVertical_bias="0.16000003"
+        app:srcCompat="@drawable/y01d" />
 
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/switch1"
@@ -84,6 +87,20 @@
         app:layout_constraintStart_toStartOf="@+id/speed_image"
         app:layout_constraintTop_toBottomOf="@+id/speed_image" />
 
+
+    <TextView
+        android:id="@+id/my_radio_play_name"
+        android:layout_width="wrap_content"
+        android:layout_height="41dp"
+        android:layout_marginTop="52dp"
+        android:fontFamily="sans-serif"
+        android:text="@string/string_p4"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/speedTextView"
@@ -108,21 +125,6 @@
         app:layout_constraintTop_toBottomOf="@+id/my_radio_play_name" />
 
 
-    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/adView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:visibility="visible"
-        ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-5770694165805669/3714218614"
-        ads:layout_constraintBottom_toBottomOf="parent"
-        ads:layout_constraintEnd_toEndOf="parent"
-        ads:layout_constraintStart_toStartOf="parent"></com.google.android.gms.ads.AdView>
-
     <TextView
         android:id="@+id/my_km_text"
         android:layout_width="wrap_content"
@@ -145,7 +147,6 @@
         android:layout_height="27dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Oslo"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="20sp"
@@ -172,21 +173,20 @@
         app:layout_constraintTop_toTopOf="@+id/speed_image"
         app:layout_constraintVertical_bias="1.0" />
 
-    <ImageView
-        android:id="@+id/my_weather_img"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="236dp"
-        android:layout_marginStart="68dp"
-        android:scaleType="fitCenter"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/speed_image"
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:visibility="visible"
+        app:adSize="BANNER"
+        app:adUnitId="ca-app-pub-5770694165805669/3714218614"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/my_city_text"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/y01d" />
+        app:layout_constraintStart_toStartOf="parent"></com.google.android.gms.ads.AdView>
 
 
 </android.support.constraint.ConstraintLayout>

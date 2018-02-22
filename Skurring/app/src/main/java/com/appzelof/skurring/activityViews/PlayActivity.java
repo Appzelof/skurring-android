@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -43,6 +45,10 @@ import com.google.android.gms.ads.MobileAds;
 import com.squareup.picasso.Picasso;
 
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -66,6 +72,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private BillingProcessor bp;
     private Button premBtn;
     private TinyDB tinyDB;
+    private Geocoder geocoder;
+    public static String endPoint;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,10 +86,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         loadAds();
         loadAlreadyPurchased();
         loadCheckedState();
+
+
     }
 
 
     private void initializeData() {
+
 
 
         soundPlayer = new SoundPlayer();
@@ -112,6 +124,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         soundPlayer.play(getApplicationContext(), urlStream);
 
 
+
         bp = new BillingProcessor(this, null,this);
 
         Typeface customFont  = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
@@ -135,8 +148,26 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                     if (kMH < 1) {
                         speedTxt.setText("0");
                     }
-
                 }
+
+                try {
+
+                    geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                    List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    String country = addressList.get(0).getCountryName();
+                    String fylke = addressList.get(0).getAdminArea();
+                    String locality = addressList.get(0).getLocality();
+                    String subLocality = addressList.get(0).getSubLocality();
+
+                    cityText.setText(subLocality);
+
+                    PlayActivity.endPoint = "http://www.yr.no/place/" + country +"/" + fylke +"/" + locality + "/" + subLocality +"/varsel.xml";
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
 
             }
 
@@ -327,6 +358,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             super.onDestroy();
         }
     }
+
+
 
 }
 

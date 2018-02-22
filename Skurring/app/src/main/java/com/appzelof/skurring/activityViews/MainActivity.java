@@ -21,8 +21,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
 
     private ImageButton btn, btn2, btn3, btn4, btn5, btn6, btn7;
-
-
     private FirebaseAnalytics firebaseAnalytics;
     public static ArrayList<RadioObject> list;
     public static TinyDB tinyDB;
@@ -52,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(this, PlayActivity.class);
 
         Bundle extra = getIntent().getExtras();
-
 
             switch (v.getId()) {
 

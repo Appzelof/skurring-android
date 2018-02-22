@@ -32,7 +32,7 @@ public class RadioStationAdapter extends RecyclerView.Adapter<RadioStationAdapte
         private TextView radioName;
         private ImageView radioImage;
 
-        public RadioStationViewHolder(View v ){
+        public RadioStationViewHolder(View v){
             super(v);
             radioName = (TextView) v.findViewById(R.id.my_text);
             radioImage = (ImageView) v.findViewById(R.id.my_image);
