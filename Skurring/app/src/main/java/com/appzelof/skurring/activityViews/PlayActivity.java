@@ -2,8 +2,10 @@ package com.appzelof.skurring.activityViews;
 
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -22,6 +24,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
+import android.telephony.PhoneStateListener;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -35,9 +38,11 @@ import android.widget.Toast;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
+import com.appzelof.skurring.Interface.LiveData;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.TinyDB.TinyDB;
 import com.appzelof.skurring.mediaPlayer.SoundPlayer;
+import com.appzelof.skurring.xml.XmlParser;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -52,14 +57,13 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class PlayActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, BillingProcessor.IBillingHandler{
+public class PlayActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, BillingProcessor.IBillingHandler, LiveData {
 
     private View playView;
     private SoundPlayer soundPlayer;
     private ImageView imageView, speedImageView, weatherImage;
     private TextView textView, speedTxt, kmText, cityText, tempText;
-    private String radioURL;
-    private String radioName;
+    private String radioURL, radioName;
     private int radioImage;
     private Uri urlStream;
     private LocationManager locationManager;
@@ -73,6 +77,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private Button premBtn;
     private TinyDB tinyDB;
     private Geocoder geocoder;
+    private XmlParser xmlParser;
     public static String endPoint;
 
 
@@ -84,18 +89,27 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         initializeData();
         loadAds();
-        loadAlreadyPurchased();
+        loadAlreadyPurchasedContent();
         loadCheckedState();
+        loadSpeedAndLocation();
+        startParsing();
+        updateUI();
 
 
     }
 
+    @Override
+    public void getLiveDataString(String data) {
+        System.out.println("The live data: " + data);
+
+    }
 
     private void initializeData() {
 
-
-
         soundPlayer = new SoundPlayer();
+        soundPlayer.liveData = this;
+
+
 
         imageView = (ImageView) findViewById(R.id.my_play_image);
         weatherImage = (ImageView) findViewById(R.id.my_weather_img);
@@ -123,78 +137,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         urlStream = Uri.parse(getRadioURL());
         soundPlayer.play(getApplicationContext(), urlStream);
 
+        bp = new BillingProcessor(this, null, this);
 
-
-        bp = new BillingProcessor(this, null,this);
-
-        Typeface customFont  = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
+        Typeface customFont = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
         speedTxt.setTypeface(customFont);
         kmText.setTypeface(customFont);
-
 
         tinyDB = new TinyDB(this);
         tinyDB.putString("stream", getRadioURL());
 
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                location.getLatitude();
-                double kMH = location.getSpeed() * 3.6;
-
-                if (aSwitch.isChecked()){
-                    speedTxt.setText(String.valueOf(Math.round(kMH)));
-                    ;
-
-                    if (kMH < 1) {
-                        speedTxt.setText("0");
-                    }
-                }
-
-                try {
-
-                    geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-                    List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                    String country = addressList.get(0).getCountryName();
-                    String fylke = addressList.get(0).getAdminArea();
-                    String locality = addressList.get(0).getLocality();
-                    String subLocality = addressList.get(0).getSubLocality();
-
-                    cityText.setText(subLocality);
-
-                    PlayActivity.endPoint = "http://www.yr.no/place/" + country +"/" + fylke +"/" + locality + "/" + subLocality +"/varsel.xml";
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISION_ALL);
-
-            return;
-        }
-
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
 
     }
 
@@ -206,7 +157,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         myBannerAdView.loadAd(adRequest);
     }
 
-    private void loadAlreadyPurchased() {
+    private void loadAlreadyPurchasedContent() {
 
         if (tinyDB.getBoolean("saveP") == true) {
             removeAds();
@@ -282,7 +233,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         return radioName;
     }
 
-
     private void goBack() {
         finish();
     }
@@ -346,7 +296,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!bp.handleActivityResult(requestCode, resultCode, data));
+        if (!bp.handleActivityResult(requestCode, resultCode, data)) ;
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -359,9 +309,95 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    public void loadSpeedAndLocation() {
+        LocationListener locationListener = new LocationListener() {
+
+            @Override
+            public void onLocationChanged(Location location) {
+                location.getLatitude();
+                double kMH = location.getSpeed() * 3.6;
+
+                if (aSwitch.isChecked()) {
+                    speedTxt.setText(String.valueOf(Math.round(kMH)));
+
+                    if (kMH < 1) {
+                        speedTxt.setText("0");
+                    }
+
+                }
+
+                try {
+
+                    geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                    List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    String countryCode = addressList.get(0).getCountryCode();
+                    String country = addressList.get(0).getCountryName();
+                    String adminArea = addressList.get(0).getAdminArea();
+                    String locality = addressList.get(0).getLocality();
+                    String subLocality = addressList.get(0).getSubLocality();
+                    String postalCode = addressList.get(0).getPostalCode();
 
 
+                    cityText.setText(adminArea);
+
+
+                    PlayActivity.endPoint = "https://www.yr.no/place/" + country + "/postnummer/" + postalCode + "/forecast.xml";
+
+                    System.out.println(PlayActivity.endPoint);
+
+                    if (PlayActivity.endPoint != null) {
+
+                        startParsing();
+
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISION_ALL);
+
+            return;
+        }
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+    }
+
+    private void startParsing() {
+        xmlParser = new XmlParser(PlayActivity.endPoint);
+        xmlParser.execute();
+        updateUI();
+
+    }
+
+    private void updateUI() {
+        tempText.setText(xmlParser.getTemperature());
+
+    }
 }
+
+
+
 
 
 

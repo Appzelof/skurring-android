@@ -213,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn6.setOnLongClickListener(this);
 
         btn7.setOnClickListener(this);
-        btn7.setOnLongClickListener(this);
 
     }
 
