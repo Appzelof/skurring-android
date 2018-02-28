@@ -6,25 +6,22 @@ package com.appzelof.skurring.model;
 
 public class WeatherObject {
 
-    private String city;
     private String temp;
-    private int image;
+    private String imageName;
 
-    public WeatherObject(String city, String temp, int image) {
-        this.city = city;
+    public void setTemp(String temp) {
         this.temp = temp;
-        this.image = image;
     }
 
-    public String getCity() {
-        return city;
+    public void setImage(String image) {
+        this.imageName = image;
     }
 
     public String getTemp() {
         return temp;
     }
 
-    public int getImage() {
-        return image;
+    public String getImage() {
+        return imageName;
     }
 }

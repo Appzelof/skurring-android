@@ -4,24 +4,33 @@ import android.app.Application;
 import android.content.Context;
 import android.location.Geocoder;
 import android.os.AsyncTask;
+import android.renderscript.ScriptGroup;
+import android.util.Log;
 import android.util.Xml;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 
 import com.appzelof.skurring.activityViews.MainActivity;
 import com.appzelof.skurring.activityViews.PlayActivity;
+import com.appzelof.skurring.model.WeatherObject;
 import com.google.android.gms.ads.internal.gmsg.HttpClient;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,91 +38,75 @@ import java.util.Locale;
  * Created by daniel on 21/02/2018.
  */
 
-public class XmlParser extends AsyncTask {
+public class XmlParser extends AsyncTask<String, Void, String> {
 
-    private static String temp;
-    private static String weatherImg;
-    private XmlPullParserFactory xmlPullParserFactory;
-    private String urlString;
+    private static final String TAG = "DownloadData";
 
-    public XmlParser(String urlString) {
-        this.urlString = urlString;
+
+    @Override
+    protected String doInBackground(String... strings) {
+
+        Log.d(TAG, "do in background " + strings[0]);
+
+        String rssFeed = downloadXml(strings[0]);
+
+        if (rssFeed == null) {
+            Log.e(TAG, "error downloading");
+        }
+
+        return rssFeed;
     }
 
     @Override
-    protected Object doInBackground(Object[] objects) {
+    protected void onPostExecute(String s) {
+        super.onPostExecute(s);
+        Log.d(TAG, "onPostExecute: parameter is " + s);
+        ParseData parseData = new ParseData();
+        parseData.parse(s);
+
+        
+    }
+
+    private String downloadXml(String string) {
+
+        StringBuilder xmlResult = new StringBuilder();
 
         try {
 
-            URL url = new URL(this.urlString);
-            HttpURLConnection connect = (HttpURLConnection) url.openConnection();
-            connect.setReadTimeout(10000);
-            connect.setConnectTimeout(14000);
-            connect.setRequestMethod("GET");
-            connect.setDoInput(true);
-            connect.connect();
+            URL url = new URL(string);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(300);
+            connection.setReadTimeout(200);
 
-            InputStream iStream = connect.getInputStream();
+            int response = connection.getResponseCode();
 
-            xmlPullParserFactory = XmlPullParserFactory.newInstance();
-            XmlPullParser mParser = xmlPullParserFactory.newPullParser();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-            mParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            mParser.setInput(iStream, null);
-            mParser.nextTag();
-            parseXml(mParser);
-            iStream.close();
+            int charsRead;
+            char[] chars = new char[2000];
+            while (true) {
+                charsRead = reader.read(chars);
+                if (charsRead < 0) {
+                    break;
+                }
 
-        } catch (IOException e) {
+                if (charsRead > 0) {
+                    xmlResult.append(String.copyValueOf(chars, 0, charsRead));
+                }
+            }
+
+            reader.close();
+
+            return xmlResult.toString();
+
+        } catch (MalformedURLException e) {
             e.printStackTrace();
-        } catch (XmlPullParserException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-    public static String getTemperature() {
-        return temp;
-    }
-
-    public static String getWeatherImg() {
-        return weatherImg;
-    }
-
-    public void parseXml(XmlPullParser myParser) throws IOException, XmlPullParserException {
-
-        int event;
-        String text = null;
-
-        try {
-            event = myParser.getEventType();
-            while (event != XmlPullParser.END_DOCUMENT) {
-                String name = myParser.getName();
-                switch (event) {
-                    case XmlPullParser.START_TAG:
-                        if (name.equals("temperature")) {
-                            temp = myParser.getAttributeValue(null, "value");
-                        }
-                        break;
-                    case XmlPullParser.END_TAG:
-                        if (name.equals("symbol")) {
-                            weatherImg = myParser.getAttributeValue(null, "var");
-                        }
-                }
-
-                event = myParser.next();
-            }
-
-            System.out.println(getTemperature() + getWeatherImg() + " været");
-
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
 }
+

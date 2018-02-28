@@ -19,8 +19,7 @@ import java.net.URL;
  * Created by daniel on 23/11/2017.
  */
 
-public class SoundPlayer implements MediaPlayer.OnTimedMetaDataAvailableListener, AudioManager.OnAudioFocusChangeListener {
-
+public class SoundPlayer implements MediaPlayer.OnTimedMetaDataAvailableListener, AudioManager.OnAudioFocusChangeListener  {
 
     private MediaPlayer mediaPlayer;
     public LiveData liveData;

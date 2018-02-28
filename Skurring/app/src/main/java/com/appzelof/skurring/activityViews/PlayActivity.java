@@ -25,6 +25,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.telephony.PhoneStateListener;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -42,6 +43,8 @@ import com.appzelof.skurring.Interface.LiveData;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.TinyDB.TinyDB;
 import com.appzelof.skurring.mediaPlayer.SoundPlayer;
+import com.appzelof.skurring.model.WeatherObject;
+import com.appzelof.skurring.xml.ParseData;
 import com.appzelof.skurring.xml.XmlParser;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -49,6 +52,8 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.squareup.picasso.Picasso;
 
+
+import org.xmlpull.v1.XmlPullParser;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -92,10 +97,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         loadAlreadyPurchasedContent();
         loadCheckedState();
         loadSpeedAndLocation();
-        startParsing();
-        updateUI();
-
-
     }
 
     @Override
@@ -108,8 +109,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         soundPlayer = new SoundPlayer();
         soundPlayer.liveData = this;
-
-
 
         imageView = (ImageView) findViewById(R.id.my_play_image);
         weatherImage = (ImageView) findViewById(R.id.my_weather_img);
@@ -145,7 +144,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         tinyDB = new TinyDB(this);
         tinyDB.putString("stream", getRadioURL());
-
 
     }
 
@@ -337,18 +335,17 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                     String subLocality = addressList.get(0).getSubLocality();
                     String postalCode = addressList.get(0).getPostalCode();
 
-
                     cityText.setText(adminArea);
-
 
                     PlayActivity.endPoint = "https://www.yr.no/place/" + country + "/postnummer/" + postalCode + "/forecast.xml";
 
-                    System.out.println(PlayActivity.endPoint);
+
 
                     if (PlayActivity.endPoint != null) {
 
-                        startParsing();
-
+                        XmlParser xmlParser = new XmlParser();
+                        xmlParser.execute(endPoint);
+                        updateUI();
                     }
 
                 } catch (IOException e) {
@@ -383,17 +380,18 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
     }
 
-    private void startParsing() {
-        xmlParser = new XmlParser(PlayActivity.endPoint);
-        xmlParser.execute();
-        updateUI();
-
-    }
-
     private void updateUI() {
-        tempText.setText(xmlParser.getTemperature());
+        tempText.setText(ParseData.getTemp());
+        String img = ParseData.getImg();
 
+        if (img != null) {
+            String myImage = "y" + img;
+            int resId = getResources().getIdentifier(myImage, "drawable", getPackageName());
+            System.out.println(resId);
+            Picasso.with(this).load(resId).into(weatherImage);
+        }
     }
+
 }
 
 
