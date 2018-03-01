@@ -25,20 +25,17 @@ public class SoundPlayer implements MediaPlayer.OnTimedMetaDataAvailableListener
     public LiveData liveData;
 
     public SoundPlayer(){
-
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnTimedMetaDataAvailableListener(this);
     }
 
     public void play(Context context, Uri uri){
-
         if (!mediaPlayer.isPlaying()) {
 
             try {
                 mediaPlayer.setDataSource(context, uri);
                 mediaPlayer.prepareAsync();
-
                 mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
@@ -61,7 +58,6 @@ public class SoundPlayer implements MediaPlayer.OnTimedMetaDataAvailableListener
 
 
     public void stop() {
-
         if (mediaPlayer != null){
             mediaPlayer.stop();
             mediaPlayer.release();

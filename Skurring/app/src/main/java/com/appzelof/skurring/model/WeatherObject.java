@@ -13,15 +13,35 @@ public class WeatherObject {
         this.temp = temp;
     }
 
+    public WeatherObject(String weatherIcon, String weatherTemp) {
+        setImage(weatherIcon);
+        setTemp(weatherTemp);
+    }
+
+    public WeatherObject(){}
+
     public void setImage(String image) {
         this.imageName = image;
     }
 
     public String getTemp() {
-        return temp;
+
+        if (temp == null) {
+            temp = "";
+            return temp;
+        } else {
+            return temp;
+        }
     }
 
     public String getImage() {
-        return imageName;
+
+        if (imageName == null) {
+             imageName = "";
+             return imageName;
+        } else {
+            return imageName;
+        }
     }
 }
+

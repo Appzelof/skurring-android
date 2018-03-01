@@ -1,5 +1,6 @@
 package com.appzelof.skurring.xml;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.location.Geocoder;
@@ -12,6 +13,8 @@ import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.appzelof.skurring.Interface.ObserveLocation;
+import com.appzelof.skurring.Interface.WeatherUpdate;
 import com.appzelof.skurring.activityViews.MainActivity;
 import com.appzelof.skurring.activityViews.PlayActivity;
 import com.appzelof.skurring.model.WeatherObject;
@@ -41,7 +44,11 @@ import java.util.Locale;
 public class XmlParser extends AsyncTask<String, Void, String> {
 
     private static final String TAG = "DownloadData";
+    private WeatherUpdate weatherUpdate;
 
+    public XmlParser(PlayActivity playerAct) {
+        this.weatherUpdate = playerAct;
+    }
 
     @Override
     protected String doInBackground(String... strings) {
@@ -62,10 +69,19 @@ public class XmlParser extends AsyncTask<String, Void, String> {
         super.onPostExecute(s);
         Log.d(TAG, "onPostExecute: parameter is " + s);
         ParseData parseData = new ParseData();
-        parseData.parse(s);
+
+        if (PlayActivity.endPoint != null) {
+           // parseData.parse(s);
+            weatherUpdate.getUpdatedWeatherData(parseData.parse(s));
+
+
+        }
+
 
         
     }
+
+
 
     private String downloadXml(String string) {
 
@@ -83,7 +99,7 @@ public class XmlParser extends AsyncTask<String, Void, String> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
             int charsRead;
-            char[] chars = new char[2000];
+            char[] chars = new char[500];
             while (true) {
                 charsRead = reader.read(chars);
                 if (charsRead < 0) {

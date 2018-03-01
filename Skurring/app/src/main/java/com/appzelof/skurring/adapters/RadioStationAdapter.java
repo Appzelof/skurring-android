@@ -28,7 +28,6 @@ public class RadioStationAdapter extends RecyclerView.Adapter<RadioStationAdapte
 
 
     public class RadioStationViewHolder extends RecyclerView.ViewHolder  {
-
         private TextView radioName;
         private ImageView radioImage;
 
@@ -48,7 +47,6 @@ public class RadioStationAdapter extends RecyclerView.Adapter<RadioStationAdapte
 
     @Override
     public RadioStationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_radio_cards, parent, false);
         RadioStationViewHolder pvh = new RadioStationViewHolder(v);
         v.setBackgroundColor(Color.BLACK);
@@ -60,7 +58,6 @@ public class RadioStationAdapter extends RecyclerView.Adapter<RadioStationAdapte
 
     @Override
     public void onBindViewHolder(final RadioStationViewHolder holder, final int position)  {
-
         holder.radioImage.setAdjustViewBounds(true);
         holder.radioName.setText(radioObjectListCreator.getList().get(position).getName());
         img = radioObjectListCreator.getList().get(position).getRadioImage();

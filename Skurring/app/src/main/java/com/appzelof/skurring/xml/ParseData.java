@@ -3,6 +3,7 @@ package com.appzelof.skurring.xml;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.appzelof.skurring.Interface.ObserveLocation;
 import com.appzelof.skurring.model.WeatherObject;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -20,24 +21,22 @@ import java.util.WeakHashMap;
 public class ParseData {
 
     private static final String TAG = "ParseData";
-    private ArrayList<WeatherObject> weatherObjectArrayList;
-    private WeatherObject weatherObject;
     public static String img;
     public static String temp;
 
+    private ArrayList<String> weatherSymbol;
+    private ArrayList<String> weatherTemperature;
+
     public ParseData() {
-        weatherObjectArrayList = new ArrayList<>();
+        weatherSymbol = new ArrayList<String>();
+        weatherTemperature = new ArrayList<String>();
     }
 
-    public  ArrayList<WeatherObject> getWeatherObjectArrayList() {
-        return weatherObjectArrayList;
-    }
 
-    public boolean parse(String xmlData) {
+    public WeatherObject parse(String xmlData) {
         boolean status = true;
         boolean inTabular = false;
         String textValue = "";
-        weatherObject = new WeatherObject();
 
 
         try {
@@ -51,34 +50,43 @@ public class ParseData {
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 String tagName = xpp.getName();
+
                     switch (eventType) {
                         case XmlPullParser.START_TAG:
-                             break;
 
                         case XmlPullParser.TEXT:
                             textValue = xpp.getText();
                             break;
 
                         case XmlPullParser.END_TAG:
-                                if ("time".equalsIgnoreCase(tagName)) {
-                                    weatherObjectArrayList.add(weatherObject);
-                                } else if ("symbol".equalsIgnoreCase(tagName)) {
-                                  String image = (xpp.getAttributeValue(null, "var"));
-                                  if (image != null) {
-                                      setImg(image);
-                                  }
-                                } else if ("temperature".equalsIgnoreCase(tagName)) {
+
+                            switch (tagName) {
+
+                                case "symbol":
+                                    String image = (xpp.getAttributeValue(null, "var"));
+                                    if (image != null) {
+                                        this.weatherSymbol.add(image);
+                                        System.out.println(image);
+                                    }
+                                    break;
+
+                                case "temperature":
                                     String temp = (xpp.getAttributeValue(null, "value"));
-                                        setTemp(temp);
-                                }
+                                    if (temp != null) {
+                                        this.weatherTemperature.add(temp);
+                                        System.out.println(temp);
+                                    }
+                                    break;
+                            }
 
                             break;
 
                         default:
-
+                            break;
                     }
 
-                    eventType = xpp.next();
+                eventType = xpp.next();
+
 
                 }
 
@@ -87,23 +95,16 @@ public class ParseData {
             e.printStackTrace();
         }
 
-       return status;
+       return getWeatherObject();
     }
 
-    public static String getImg() {
-        return img;
+    public WeatherObject getWeatherObject() {
+        WeatherObject theWeather = new WeatherObject();
+        if (this.weatherTemperature.size() > 0 && this.weatherSymbol.size() > 0) {
+            theWeather.setTemp(this.weatherTemperature.get(0));
+            theWeather.setImage(this.weatherSymbol.get(0));
+        }
+        return theWeather;
     }
 
-    public static void setImg(String img) {
-        ParseData.img = img;
-    }
-
-    public static String getTemp() {
-        return temp;
-    }
-
-    public static void setTemp(String temp) {
-        ParseData.temp = temp;
-
-    }
 }

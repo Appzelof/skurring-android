@@ -2,6 +2,7 @@ package com.appzelof.skurring.activityViews;
 
 
 import android.Manifest;
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.telephony.PhoneStateListener;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -40,6 +43,8 @@ import android.widget.Toast;
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.appzelof.skurring.Interface.LiveData;
+import com.appzelof.skurring.Interface.ObserveLocation;
+import com.appzelof.skurring.Interface.WeatherUpdate;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.TinyDB.TinyDB;
 import com.appzelof.skurring.mediaPlayer.SoundPlayer;
@@ -58,11 +63,12 @@ import org.xmlpull.v1.XmlPullParser;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 
-public class PlayActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, BillingProcessor.IBillingHandler, LiveData {
+public class PlayActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, BillingProcessor.IBillingHandler, LiveData, WeatherUpdate {
 
     private View playView;
     private SoundPlayer soundPlayer;
@@ -84,6 +90,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private Geocoder geocoder;
     private XmlParser xmlParser;
     public static String endPoint;
+    private ParseData parseData;
 
 
     @Override
@@ -97,22 +104,25 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         loadAlreadyPurchasedContent();
         loadCheckedState();
         loadSpeedAndLocation();
+
+
     }
 
     @Override
     public void getLiveDataString(String data) {
         System.out.println("The live data: " + data);
-
     }
 
     private void initializeData() {
 
+
         soundPlayer = new SoundPlayer();
         soundPlayer.liveData = this;
-
+        parseData = new ParseData();
         imageView = (ImageView) findViewById(R.id.my_play_image);
         weatherImage = (ImageView) findViewById(R.id.my_weather_img);
         speedImageView = (ImageView) findViewById(R.id.speed_image);
+
 
         textView = (TextView) findViewById(R.id.my_radio_play_name);
         speedTxt = (TextView) findViewById(R.id.speedTextView);
@@ -147,16 +157,21 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @Override
+    public void getUpdatedWeatherData(WeatherObject weatherObject) {
+        //Ting skjer
+        System.out.println("FÅR DATA: " + weatherObject.getTemp());
+        this.updateUI(weatherObject);
+    }
+
     private void loadAds() {
         MobileAds.initialize(this, "\n" +
                 "ca-app-pub-5770694165805669/3714218614");
-
         adRequest = new AdRequest.Builder().build();
         myBannerAdView.loadAd(adRequest);
     }
 
     private void loadAlreadyPurchasedContent() {
-
         if (tinyDB.getBoolean("saveP") == true) {
             removeAds();
         }
@@ -170,7 +185,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             aSwitch.setChecked(false);
         }
     }
-
 
     public boolean removeAds() {
         speedImageView.setVisibility(View.VISIBLE);
@@ -187,7 +201,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-
         switch (v.getId()) {
             case R.id.playView:
                 soundPlayer.stop();
@@ -201,7 +214,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private int getRadioImage() {
         Bundle extra = getIntent().getExtras();
-
         if (extra != null) {
             radioImage = extra.getInt("radioImage");
         }
@@ -211,7 +223,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private String getRadioURL() {
         Bundle extra = getIntent().getExtras();
-
         if (extra != null) {
             radioURL = extra.getString("radioURL");
             System.out.println(radioURL);
@@ -223,7 +234,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private String getRadioName() {
         Bundle extra = getIntent().getExtras();
-
         if (extra != null) {
             radioName = extra.getString("radioName");
         }
@@ -237,24 +247,21 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
         if (aSwitch.isChecked()) {
-            Picasso.with(this).load(R.drawable.green_speed).into(speedImageView);
+            speedImageView.setImageResource(R.drawable.green_speed);
             speedTxt.setVisibility(View.VISIBLE);
             kmText.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.INVISIBLE);
             tinyDB.putBoolean("checked", true);
             Toast.makeText(this, "Speedometer aktivert", Toast.LENGTH_SHORT).show();
-
         } else {
-            Picasso.with(this).load(R.drawable.speed).into(speedImageView);
+            speedImageView.setImageResource(R.drawable.speed);
             speedTxt.setVisibility(View.INVISIBLE);
             imageView.setVisibility(View.VISIBLE);
             kmText.setVisibility(View.INVISIBLE);
             tinyDB.putBoolean("checked", false);
             Toast.makeText(this, "Speedometer deaktivert", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @Override
@@ -262,7 +269,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         super.onBackPressed();
         soundPlayer.stop();
         goBack();
-
     }
 
 
@@ -270,7 +276,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
         Toast.makeText(this, "purchased", Toast.LENGTH_SHORT).show();
         removeAds();
-
         if (removeAds() == true) {
             tinyDB.putBoolean("saveP", removeAds());
         }
@@ -278,7 +283,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onPurchaseHistoryRestored() {
-
 
     }
 
@@ -302,30 +306,27 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         if (bp != null) {
             bp.release();
-
             super.onDestroy();
         }
     }
 
+    boolean stopper = false;
+
     public void loadSpeedAndLocation() {
         LocationListener locationListener = new LocationListener() {
-
             @Override
             public void onLocationChanged(Location location) {
-                location.getLatitude();
                 double kMH = location.getSpeed() * 3.6;
-
                 if (aSwitch.isChecked()) {
                     speedTxt.setText(String.valueOf(Math.round(kMH)));
-
                     if (kMH < 1) {
                         speedTxt.setText("0");
                     }
-
                 }
 
-                try {
 
+
+                try {
                     geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
                     List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                     String countryCode = addressList.get(0).getCountryCode();
@@ -333,20 +334,20 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                     String adminArea = addressList.get(0).getAdminArea();
                     String locality = addressList.get(0).getLocality();
                     String subLocality = addressList.get(0).getSubLocality();
-                    String postalCode = addressList.get(0).getPostalCode();
+                    final String postalCode = addressList.get(0).getPostalCode();
 
-                    cityText.setText(adminArea);
+                    cityText.setText(locality);
 
-                    PlayActivity.endPoint = "https://www.yr.no/place/" + country + "/postnummer/" + postalCode + "/forecast.xml";
+                    endPoint = "https://www.yr.no/place/" + country + "/postnummer/" + postalCode + "/forecast.xml";
 
-
-
-                    if (PlayActivity.endPoint != null) {
-
-                        XmlParser xmlParser = new XmlParser();
-                        xmlParser.execute(endPoint);
-                        updateUI();
+                    if (!stopper) {
+                        startParsing();
                     }
+
+                    stopper = true;
+
+
+
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -356,6 +357,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
+
 
             }
 
@@ -371,7 +373,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         };
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISION_ALL);
 
             return;
@@ -380,19 +381,45 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
     }
 
-    private void updateUI() {
-        tempText.setText(ParseData.getTemp());
-        String img = ParseData.getImg();
+
+    private void startParsing() {
+            XmlParser xmlParser = new XmlParser(this);
+            xmlParser.execute(endPoint);
+    }
+
+    public void updateUI(WeatherObject weatherObject) {
+
+        String xmlTemp = weatherObject.getTemp();
+        System.out.println("TEMP: " + xmlTemp);
+        if (xmlTemp != null) {
+
+            int temperature = Integer.parseInt(xmlTemp);
+
+            if (temperature <= 0) {
+                tempText.setTextColor(getResources().getColor(R.color.cold_blue));
+            } else {
+                tempText.setTextColor(getResources().getColor(R.color.warm_orange));
+            }
+
+            tempText.setText(temperature + "");
+        }
+
+        String img = weatherObject.getImage();
+        System.out.println("IMGG: " + img);
 
         if (img != null) {
+            System.out.println();
             String myImage = "y" + img;
             int resId = getResources().getIdentifier(myImage, "drawable", getPackageName());
             System.out.println(resId);
-            Picasso.with(this).load(resId).into(weatherImage);
+            weatherImage.setImageResource(resId);
         }
     }
 
 }
+
+
+
 
 
 

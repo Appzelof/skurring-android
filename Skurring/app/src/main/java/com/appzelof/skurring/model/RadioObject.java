@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by daniel on 27/11/2017.
  */
 
-public class RadioObject implements Serializable {
+public class RadioObject {
     private String url;
     private String name;
     private int radioImage;
@@ -18,7 +18,6 @@ public class RadioObject implements Serializable {
         setRadioImage(radioImage);
 
     }
-
 
     public String getUrl() {
         return url;

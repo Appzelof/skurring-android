@@ -136,11 +136,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onLongClick(View v) {
-
         Intent intent = new Intent(this, RadioListActivity.class);
-
         finish();
-
         switch (v.getId()) {
             case R.id.button1:
                 intent.putExtra("button", 1);
@@ -177,7 +174,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initializeData() {
-
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         list = new ArrayList<>();
@@ -230,13 +226,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             radioName = extra.getString("radioName");
             radioURL = extra.getString("radioURL");
             radioImage = extra.getInt("radioImage");
-
             if (extra.getInt("btn1") == 1) {
                 tinyDB.putString("name", radioName);
                 tinyDB.putString("url", radioURL);
                 tinyDB.putInt("image", radioImage);
             }
-
             if (extra.getInt("btn2") == 2) {
                 tinyDB.putString("name2", radioName);
                 tinyDB.putString("url2", radioURL);
@@ -267,42 +261,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
     private void updateButtonUI() {
 
         Bundle extra = getIntent().getExtras();
-
         if (tinyDB.getInt("image") != 0) {
             btn.setImageResource(tinyDB.getInt("image"));
         } else {
             btn.setImageResource(R.drawable.hold);
         }
 
-
         if (tinyDB.getInt("image2") != 0) {
             btn2.setImageResource(tinyDB.getInt("image2"));
         } else {
             btn2.setImageResource(R.drawable.hold);
         }
-
         if (tinyDB.getInt("image3") != 0){
             btn3.setImageResource(tinyDB.getInt("image3"));
         } else {
             btn3.setImageResource(R.drawable.hold);
         }
-
         if (tinyDB.getInt("image4") != 0){
             btn4.setImageResource(tinyDB.getInt("image4"));
         } else {
             btn4.setImageResource(R.drawable.hold);
         }
-
         if (tinyDB.getInt("image5") != 0){
             btn5.setImageResource(tinyDB.getInt("image5"));
         } else {
             btn5.setImageResource(R.drawable.hold);
         }
-
         if (tinyDB.getInt("image6") != 0){
             btn6.setImageResource(tinyDB.getInt("image6"));
         } else {
