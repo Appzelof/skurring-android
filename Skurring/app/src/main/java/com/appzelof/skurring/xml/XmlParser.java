@@ -1,41 +1,17 @@
 package com.appzelof.skurring.xml;
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.Context;
-import android.location.Geocoder;
 import android.os.AsyncTask;
-import android.renderscript.ScriptGroup;
 import android.util.Log;
-import android.util.Xml;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 
-import com.appzelof.skurring.Interface.ObserveLocation;
 import com.appzelof.skurring.Interface.WeatherUpdate;
-import com.appzelof.skurring.activityViews.MainActivity;
 import com.appzelof.skurring.activityViews.PlayActivity;
-import com.appzelof.skurring.model.WeatherObject;
-import com.google.android.gms.ads.internal.gmsg.HttpClient;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by daniel on 21/02/2018.
@@ -69,14 +45,7 @@ public class XmlParser extends AsyncTask<String, Void, String> {
         super.onPostExecute(s);
         Log.d(TAG, "onPostExecute: parameter is " + s);
         ParseData parseData = new ParseData();
-
-        if (PlayActivity.endPoint != null) {
-           // parseData.parse(s);
             weatherUpdate.getUpdatedWeatherData(parseData.parse(s));
-
-
-        }
-
 
         
     }

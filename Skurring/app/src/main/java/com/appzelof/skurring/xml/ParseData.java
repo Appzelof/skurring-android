@@ -1,18 +1,12 @@
 package com.appzelof.skurring.xml;
 
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.appzelof.skurring.Interface.ObserveLocation;
 import com.appzelof.skurring.model.WeatherObject;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.WeakHashMap;
 
 /**
  * Created by daniel on 27/02/2018.

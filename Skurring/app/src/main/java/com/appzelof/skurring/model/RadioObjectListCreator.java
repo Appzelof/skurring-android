@@ -61,7 +61,7 @@ public class RadioObjectListCreator {
         radioArrayList.add(new RadioObject("Kiss", "http://stream.bauermedia.no/kiss.mp3", R.drawable.kiss));
         radioArrayList.add(new RadioObject("Kisstory", "http://stream.bauermedia.no/kisstory.mp3", R.drawable.kisstory));
         radioArrayList.add(new RadioObject("The Beat", "http://stream.thebeat.no/beat128.mp3", R.drawable.the_beat));
-        radioArrayList.add(new RadioObject("Topp 40", "http://ads-e-bauerse-fm-03-cr.sharp-stream.com/top40_no_mp3?", R.drawable.topp_40));
+        radioArrayList.add(new RadioObject("Topp 40", "http://edge-bauersefm-09-gos2.sharp-stream.com/top40_no_hq", R.drawable.topp_40));
         radioArrayList.add(new RadioObject("NRJ", "http://stream.p4.no/nrj_mp3_hq", R.drawable.nrj));
         radioArrayList.add(new RadioObject("Radio Norge", "http://stream2.sbsradio.no/radionorge.mp3", R.drawable.radio_norge));
         radioArrayList.add(new RadioObject("Radio Rock", "http://stream2.sbsradio.no/radiorock.mp3", R.drawable.radiorock));

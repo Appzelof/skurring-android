@@ -2,48 +2,35 @@ package com.appzelof.skurring.activityViews;
 
 
 import android.Manifest;
-import android.app.Application;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.AudioManager;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
-import android.telephony.PhoneStateListener;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
-import android.widget.ImageSwitcher;
 import android.widget.ImageView;
-import android.widget.Switch;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.appzelof.skurring.Interface.LiveData;
-import com.appzelof.skurring.Interface.ObserveLocation;
 import com.appzelof.skurring.Interface.WeatherUpdate;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.TinyDB.TinyDB;
@@ -52,18 +39,11 @@ import com.appzelof.skurring.model.WeatherObject;
 import com.appzelof.skurring.xml.ParseData;
 import com.appzelof.skurring.xml.XmlParser;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.squareup.picasso.Picasso;
 
-
-import org.xmlpull.v1.XmlPullParser;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -91,6 +71,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private XmlParser xmlParser;
     public static String endPoint;
     private ParseData parseData;
+    private ProgressBar progressBar;
+    boolean stopper;
+
+
 
 
     @Override
@@ -110,11 +94,16 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void getLiveDataString(String data) {
-        System.out.println("The live data: " + data);
+        if (data != null) {
+            System.out.println("The live data: " + data);
+        } else {
+            System.out.println("could not fetch live data");
+        }
     }
 
     private void initializeData() {
 
+        stopper = false;
 
         soundPlayer = new SoundPlayer();
         soundPlayer.liveData = this;
@@ -122,7 +111,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         imageView = (ImageView) findViewById(R.id.my_play_image);
         weatherImage = (ImageView) findViewById(R.id.my_weather_img);
         speedImageView = (ImageView) findViewById(R.id.speed_image);
-
+        progressBar = (ProgressBar) findViewById(R.id.my_progressBar);
 
         textView = (TextView) findViewById(R.id.my_radio_play_name);
         speedTxt = (TextView) findViewById(R.id.speedTextView);
@@ -155,11 +144,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         tinyDB = new TinyDB(this);
         tinyDB.putString("stream", getRadioURL());
 
+
     }
 
     @Override
     public void getUpdatedWeatherData(WeatherObject weatherObject) {
-        //Ting skjer
         System.out.println("FÅR DATA: " + weatherObject.getTemp());
         this.updateUI(weatherObject);
     }
@@ -194,10 +183,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         weatherImage.setVisibility(View.VISIBLE);
         tempText.setVisibility(View.VISIBLE);
         cityText.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
 
         return true;
     }
-
 
     @Override
     public void onClick(View v) {
@@ -310,8 +299,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    boolean stopper = false;
-
     public void loadSpeedAndLocation() {
         LocationListener locationListener = new LocationListener() {
             @Override
@@ -324,8 +311,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
 
-
-
                 try {
                     geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
                     List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
@@ -336,15 +321,16 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                     String subLocality = addressList.get(0).getSubLocality();
                     final String postalCode = addressList.get(0).getPostalCode();
 
-                    cityText.setText(locality);
 
+                    cityText.setText(locality);
                     endPoint = "https://www.yr.no/place/" + country + "/postnummer/" + postalCode + "/forecast.xml";
 
-                    if (!stopper) {
-                        startParsing();
-                    }
 
-                    stopper = true;
+                    if (endPoint !=  null && !stopper) {
+                            startParsing(endPoint);
+                        }
+
+                        stopper = true;
 
 
 
@@ -375,44 +361,47 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISION_ALL);
 
+
             return;
         }
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
     }
 
-
-    private void startParsing() {
+    private void startParsing(String urlString) {
+        if (urlString != null){
             XmlParser xmlParser = new XmlParser(this);
-            xmlParser.execute(endPoint);
+        xmlParser.execute(urlString);
+    }
+
     }
 
     public void updateUI(WeatherObject weatherObject) {
-
         String xmlTemp = weatherObject.getTemp();
         System.out.println("TEMP: " + xmlTemp);
-        if (xmlTemp != null) {
 
-            int temperature = Integer.parseInt(xmlTemp);
-
-            if (temperature <= 0) {
-                tempText.setTextColor(getResources().getColor(R.color.cold_blue));
-            } else {
-                tempText.setTextColor(getResources().getColor(R.color.warm_orange));
+        if (endPoint != null) {
+            if (xmlTemp != null) {
+                int temperature = Integer.parseInt(xmlTemp);
+                if (temperature <= 0) {
+                    tempText.setTextColor(getResources().getColor(R.color.cold_blue));
+                } else {
+                    tempText.setTextColor(getResources().getColor(R.color.warm_orange));
+                }
+                tempText.setText(temperature + "");
+                tinyDB.putInt("temperature", temperature);
+                progressBar.setVisibility(View.INVISIBLE);
             }
-
-            tempText.setText(temperature + "");
-        }
-
-        String img = weatherObject.getImage();
-        System.out.println("IMGG: " + img);
-
-        if (img != null) {
-            System.out.println();
-            String myImage = "y" + img;
-            int resId = getResources().getIdentifier(myImage, "drawable", getPackageName());
-            System.out.println(resId);
-            weatherImage.setImageResource(resId);
+            String img = weatherObject.getImage();
+            System.out.println("IMGG: " + img);
+            if (img != null) {
+                System.out.println();
+                String myImage = "y" + img;
+                int resId = getResources().getIdentifier(myImage, "drawable", getPackageName());
+                System.out.println(resId);
+                tinyDB.putInt("res", resId);
+                weatherImage.setImageResource(resId);
+            }
         }
     }
 
