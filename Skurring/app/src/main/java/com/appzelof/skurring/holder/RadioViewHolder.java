@@ -22,4 +22,5 @@ public class RadioViewHolder extends RecyclerView.ViewHolder{
         radioImage.setImageResource(image);
         radioText.setText(channel);
     }
+
 }
