@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.vodyasov:amr-0.5">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/amr-0.5.aar/9008ba3065ae14f6641edbdf4542f4a5/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/amr-0.5.aar/9008ba3065ae14f6641edbdf4542f4a5/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.vodyasov/amr/0.5/d3a4ac77b55cd1f988ae069cfb8f92633c2ff10c/amr-0.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

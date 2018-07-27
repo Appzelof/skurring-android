@@ -21,6 +21,8 @@ public class StationsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private RadioStationAdapter radioStationAdapter;
+
     public StationsFragment() {
         // Required empty public constructor
     }
@@ -53,12 +55,15 @@ public class StationsFragment extends Fragment {
         return v;
     }
 
-    private void initializeComponents(){
+    public void initializeRadioStationAdapter() {
+        this.radioStationAdapter = new RadioStationAdapter(RadioData.getInstance().getRadioInfoList());
+    }
 
+    public RadioStationAdapter getRadioStationAdapter() {
+        return this.radioStationAdapter;
     }
 
     private void initializeRecyclerView(View v){
-        RadioStationAdapter radioStationAdapter = new RadioStationAdapter(RadioData.getInstance().getRadioInfoList());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.scrollToPosition(LinearLayoutManager.HORIZONTAL);
 
@@ -68,5 +73,7 @@ public class StationsFragment extends Fragment {
         recyclerView.setAdapter(radioStationAdapter);
 
     }
+
+
 
 }

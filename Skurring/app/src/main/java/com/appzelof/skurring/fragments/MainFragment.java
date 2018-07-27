@@ -1,6 +1,8 @@
 package com.appzelof.skurring.fragments;
 
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
@@ -8,9 +10,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
+import com.appzelof.skurring.MyMediaPlayer;
 import com.appzelof.skurring.R;
+import com.appzelof.skurring.SQLite.DatabaseManager;
 import com.appzelof.skurring.activities.MainActivity;
+import com.appzelof.skurring.model.RadioObject;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 public class MainFragment extends Fragment {
@@ -32,9 +43,9 @@ public class MainFragment extends Fragment {
     private ImageButton imageButton7;
 
     private SparseArray<ImageButton> imageButtonSparseArray;
-    private StationsFragment stationsFragment;
-
-
+    public StationsFragment stationsFragment;
+    public static int changingRadioChannel = 0;
+    private ArrayList<RadioObject> radioList;
 
 
     public MainFragment() {
@@ -67,9 +78,16 @@ public class MainFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         initializeComponents(v);
         imageButtonHandler();
-
-
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.updateUI();
+        if (MyMediaPlayer.INSTANCE != null && MyMediaPlayer.INSTANCE.getMediaPlayer() != null) {
+            MyMediaPlayer.INSTANCE.stopMediaPlayerAndMetadataRecording();
+        }
     }
 
     private void initializeComponents(View v){
@@ -97,21 +115,54 @@ public class MainFragment extends Fragment {
     private void imageButtonHandler(){
         for (int i = 1; i < 8; i++){
             System.out.println(i);
+            final int choosenChaningChannel = i;
             imageButtonSparseArray.get(i).setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    ((MainActivity) getContext()).replaceFragment(new StationsFragment(), R.id.main_container);
+                    ((MainActivity) getContext()).replaceFragment(stationsFragment, R.id.main_container);
+                    MainFragment.changingRadioChannel = choosenChaningChannel;
                     return false;
                 }
             });
 
+            final int choosenRadioStation = i - 1;
             imageButtonSparseArray.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((MainActivity) getContext()).replaceFragment(new PlayerFragment(), R.id.main_container);
+                    if (radioList.get(choosenRadioStation) != null) {
+                        PlayerFragment playerFragment = new PlayerFragment();
+                        playerFragment.choosenRadioStation = radioList.get(choosenRadioStation);
+                        ((MainActivity) getContext()).replaceFragment(playerFragment, R.id.main_container);
+                    }
                 }
             });
+            imageButtonSparseArray.get(i).setScaleType(ImageView.ScaleType.FIT_CENTER);
         }
+        this.updateUI();
+    }
+
+    private void updateUI() {
+        this.sortRadioStationList();
+        int index = 1;
+        for (RadioObject radioObject: this.radioList) {
+            Drawable theImage = getResources().getDrawable(radioObject.getRadioImage());
+            this.imageButtonSparseArray.get(index).setImageDrawable(theImage);
+            index += 1;
+        }
+    }
+
+    private void sortRadioStationList() {
+        this.radioList = DatabaseManager.INSTANCE.getAllSavedStations();
+        Collections.sort(radioList, new Comparator<RadioObject>() {
+            @Override
+            public int compare(RadioObject radioObject, RadioObject t1) {
+                if (radioObject.getChoosenSpot() < t1.getChoosenSpot()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
     }
 
 
