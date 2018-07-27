@@ -56,6 +56,7 @@ freeline_project_description.json
 
 # OS generated files #
 ######################
+<<<<<<< HEAD
 .DS_Store
 .DS_Store?
 ._*
@@ -63,3 +64,8 @@ freeline_project_description.json
 .Trashes
 ehthumbs.db
 Thumbs.db
+=======
+.DS_Store.
+.DS_Store
+.DS_Store?
+>>>>>>> android-dev
