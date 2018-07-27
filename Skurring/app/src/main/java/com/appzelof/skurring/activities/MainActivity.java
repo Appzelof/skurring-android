@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.appzelof.skurring.Interfaces.UpdateMainFragmentUI;
+import com.appzelof.skurring.MyMediaPlayer;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLite.DatabaseManager;
 import com.appzelof.skurring.fragments.MainFragment;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements UpdateMainFragmen
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+
     }
 
     @Override

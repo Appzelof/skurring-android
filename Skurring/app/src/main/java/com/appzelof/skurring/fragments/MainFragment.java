@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.appzelof.skurring.MyMediaPlayer;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLite.DatabaseManager;
 import com.appzelof.skurring.activities.MainActivity;
@@ -84,6 +85,9 @@ public class MainFragment extends Fragment {
     public void onResume() {
         super.onResume();
         this.updateUI();
+        if (MyMediaPlayer.INSTANCE != null && MyMediaPlayer.INSTANCE.getMediaPlayer() != null) {
+            MyMediaPlayer.INSTANCE.stopMediaPlayerAndMetadataRecording();
+        }
     }
 
     private void initializeComponents(View v){
@@ -111,23 +115,28 @@ public class MainFragment extends Fragment {
     private void imageButtonHandler(){
         for (int i = 1; i < 8; i++){
             System.out.println(i);
-            final int longPressedChannel = i;
+            final int choosenChaningChannel = i;
             imageButtonSparseArray.get(i).setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     ((MainActivity) getContext()).replaceFragment(stationsFragment, R.id.main_container);
-                    MainFragment.changingRadioChannel = longPressedChannel;
+                    MainFragment.changingRadioChannel = choosenChaningChannel;
                     return false;
                 }
             });
 
+            final int choosenRadioStation = i - 1;
             imageButtonSparseArray.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((MainActivity) getContext()).replaceFragment(new PlayerFragment(), R.id.main_container);
+                    if (radioList.get(choosenRadioStation) != null) {
+                        PlayerFragment playerFragment = new PlayerFragment();
+                        playerFragment.choosenRadioStation = radioList.get(choosenRadioStation);
+                        ((MainActivity) getContext()).replaceFragment(playerFragment, R.id.main_container);
+                    }
                 }
             });
-            imageButtonSparseArray.get(i).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            imageButtonSparseArray.get(i).setScaleType(ImageView.ScaleType.FIT_CENTER);
         }
         this.updateUI();
     }
