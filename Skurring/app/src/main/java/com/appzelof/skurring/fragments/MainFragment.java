@@ -125,13 +125,14 @@ public class MainFragment extends Fragment {
                 }
             });
 
-            final int choosenRadioStation = i - 1;
+            final int choosenRadioStation = i;
             imageButtonSparseArray.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (radioList.get(choosenRadioStation) != null) {
-                        PlayerFragment playerFragment = new PlayerFragment();
-                        playerFragment.choosenRadioStation = radioList.get(choosenRadioStation);
+                    PlayerFragment playerFragment = new PlayerFragment();
+                    RadioObject radioObject = searchForClickedRadiostation(choosenRadioStation);
+                    if (radioObject != null) {
+                        playerFragment.choosenRadioStation = radioObject;
                         ((MainActivity) getContext()).replaceFragment(playerFragment, R.id.main_container);
                     }
                 }
@@ -143,12 +144,19 @@ public class MainFragment extends Fragment {
 
     private void updateUI() {
         this.sortRadioStationList();
-        int index = 1;
         for (RadioObject radioObject: this.radioList) {
             Drawable theImage = getResources().getDrawable(radioObject.getRadioImage());
-            this.imageButtonSparseArray.get(index).setImageDrawable(theImage);
-            index += 1;
+            this.imageButtonSparseArray.get(radioObject.getChoosenSpot()).setImageDrawable(theImage);
         }
+    }
+
+    private RadioObject searchForClickedRadiostation(int tapped) {
+        for (RadioObject radioObject: this.radioList) {
+            if (tapped == radioObject.getChoosenSpot()) {
+                return radioObject;
+            }
+        }
+        return null;
     }
 
     private void sortRadioStationList() {
