@@ -16,14 +16,14 @@ public class MyMediaPlayer implements MediaPlayer.OnPreparedListener {
 
     public static MyMediaPlayer INSTANCE;
     private MediaPlayer mediaPlayer;
-    private String choosenRadioChannel;
+    private String chosenRadioChannel;
     public StreamInfoUpdate streamInfoUpdate;
     private ArrayList<String> metadataList;
 
     public void initAndPrepareAndPlay(String url) {
         mediaPlayer = new MediaPlayer();
         metadataList = new ArrayList<>();
-        this.choosenRadioChannel = url;
+        this.chosenRadioChannel = url;
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnPreparedListener(this);
 
@@ -38,7 +38,7 @@ public class MyMediaPlayer implements MediaPlayer.OnPreparedListener {
     }
 
     private void startMetadataRecording() {
-        AudiostreamMetadataManager.getInstance().setUri(Uri.parse(choosenRadioChannel))
+        AudiostreamMetadataManager.getInstance().setUri(Uri.parse(chosenRadioChannel))
                 .setOnNewMetadataListener(listener)
                 .setUserAgent(UserAgent.WINDOWS_MEDIA_PLAYER)
                 .start();

@@ -4,13 +4,16 @@ package com.appzelof.skurring.fragments;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.appzelof.skurring.MyMediaPlayer;
 import com.appzelof.skurring.R;
@@ -115,24 +118,27 @@ public class MainFragment extends Fragment {
     private void imageButtonHandler(){
         for (int i = 1; i < 8; i++){
             System.out.println(i);
-            final int choosenChaningChannel = i;
+            final int chosenChaningChannel = i;
             imageButtonSparseArray.get(i).setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    ((MainActivity) getContext()).replaceFragment(stationsFragment, R.id.main_container);
-                    MainFragment.changingRadioChannel = choosenChaningChannel;
-                    return false;
-                }
+                        ((MainActivity) getContext()).replaceFragment(stationsFragment, R.id.main_container);
+                        MainFragment.changingRadioChannel = chosenChaningChannel;
+                    System.out.println(chosenChaningChannel);
+                        return false;
+                    }
             });
 
-            final int choosenRadioStation = i - 1;
+            final int chosenRadioStation = i  ;
             imageButtonSparseArray.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (radioList.get(choosenRadioStation) != null) {
+                    try {
                         PlayerFragment playerFragment = new PlayerFragment();
-                        playerFragment.choosenRadioStation = radioList.get(choosenRadioStation);
+                        playerFragment.choosenRadioStation = radioList.get(chosenRadioStation);
                         ((MainActivity) getContext()).replaceFragment(playerFragment, R.id.main_container);
+                    } catch (IndexOutOfBoundsException e){
+                        Log.d("TAG", e.getMessage());
                     }
                 }
             });
@@ -143,11 +149,9 @@ public class MainFragment extends Fragment {
 
     private void updateUI() {
         this.sortRadioStationList();
-        int index = 1;
         for (RadioObject radioObject: this.radioList) {
             Drawable theImage = getResources().getDrawable(radioObject.getRadioImage());
-            this.imageButtonSparseArray.get(index).setImageDrawable(theImage);
-            index += 1;
+            this.imageButtonSparseArray.get(radioObject.getChoosenSpot()).setImageDrawable(theImage);
         }
     }
 

@@ -15,7 +15,7 @@ public class DatabaseAdapter {
 
     private SQLiteDatabase database;
     private DatabaseHelper databaseHelper;
-    private String[] allColumns = {DatabaseHelper.RADIONAME, DatabaseHelper.RADIOIMAGE, DatabaseHelper.RADIOURL, DatabaseHelper.CHOOSENRADIOSPOT};
+    private String[] allColumns = {DatabaseHelper.RADIONAME, DatabaseHelper.RADIOIMAGE, DatabaseHelper.RADIOURL, DatabaseHelper.CHOSENRADIOSPOT};
 
     public DatabaseAdapter(Context context) {
         databaseHelper = new DatabaseHelper(context);
@@ -34,7 +34,7 @@ public class DatabaseAdapter {
     public boolean update(RadioObject radioObject) {
         boolean updatedSuccess = false;
         if (database != null) {
-            updatedSuccess = database.update(DatabaseHelper.TABLE_NAME, getContentValueFromRadioObject(radioObject), DatabaseHelper.CHOOSENRADIOSPOT + " = " + radioObject.getChoosenSpot(), null)
+            updatedSuccess = database.update(DatabaseHelper.TABLE_NAME, getContentValueFromRadioObject(radioObject), DatabaseHelper.CHOSENRADIOSPOT + " = " + radioObject.getChoosenSpot(), null)
                     > 0;
             database.close();
         }
@@ -44,7 +44,7 @@ public class DatabaseAdapter {
     public void removeRadioObject(RadioObject radioObject) {
         if (database != null) {
             this.database.delete(DatabaseHelper.TABLE_NAME,
-                    DatabaseHelper.CHOOSENRADIOSPOT + " = " + radioObject.getChoosenSpot(),
+                    DatabaseHelper.CHOSENRADIOSPOT + " = " + radioObject.getChoosenSpot(),
                     null);
             this.close();
         }
@@ -75,7 +75,7 @@ public class DatabaseAdapter {
         int cursorCount = 1;
         if (database != null) {
             String[] args = {"" + MainFragment.changingRadioChannel};
-            String whereSql = DatabaseHelper.CHOOSENRADIOSPOT + " = ?";
+            String whereSql = DatabaseHelper.CHOSENRADIOSPOT + " = ?";
             Cursor cursor = database.query(DatabaseHelper.TABLE_NAME, allColumns, whereSql, args, null, null, null);
             cursorCount = cursor.getCount();
             cursor.close();
@@ -89,7 +89,7 @@ public class DatabaseAdapter {
         radioObject.setName(cursor.getString(cursor.getColumnIndex(DatabaseHelper.RADIONAME)));
         radioObject.setRadioImage(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.RADIOIMAGE)));
         radioObject.setUrl(cursor.getString(cursor.getColumnIndex(DatabaseHelper.RADIOURL)));
-        radioObject.setChoosenSpot(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.CHOOSENRADIOSPOT)));
+        radioObject.setChoosenSpot(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.CHOSENRADIOSPOT)));
         return radioObject;
     }
 
@@ -98,7 +98,7 @@ public class DatabaseAdapter {
         contentValues.put(DatabaseHelper.RADIOIMAGE, radioObject.getRadioImage());
         contentValues.put(DatabaseHelper.RADIONAME, radioObject.getName());
         contentValues.put(DatabaseHelper.RADIOURL, radioObject.getUrl());
-        contentValues.put(DatabaseHelper.CHOOSENRADIOSPOT, radioObject.getChoosenSpot());
+        contentValues.put(DatabaseHelper.CHOSENRADIOSPOT, radioObject.getChoosenSpot());
         return contentValues;
     }
 
