@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class StationsFragment extends Fragment {
@@ -69,10 +70,20 @@ public class StationsFragment extends Fragment {
 
     public void initializeRadioStationAdapter(boolean fromFirebase) {
         if (fromFirebase) {
-            this.radioStationAdapter.updateData(radioStations);
+            this.radioStationAdapter.updateData(sortList(radioStations));
         } else {
-            this.radioStationAdapter = new RadioStationAdapter(RadioData.getInstance().getRadioInfoList());
+            this.radioStationAdapter = new RadioStationAdapter(sortList(RadioData.getInstance().getRadioInfoList()));
         }
+    }
+
+    private ArrayList<RadioObject> sortList(ArrayList<RadioObject> arrayList) {
+        java.util.Collections.sort(arrayList, new Comparator<RadioObject>() {
+            @Override
+            public int compare(RadioObject o, RadioObject t1) {
+                return o.getName().compareTo(t1.getName());
+            }
+        });
+        return arrayList;
     }
 
     public RadioStationAdapter getRadioStationAdapter() {
