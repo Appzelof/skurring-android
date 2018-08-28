@@ -2,6 +2,7 @@ package com.appzelof.skurring.fragments;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,8 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.appzelof.skurring.R;
+import com.appzelof.skurring.activities.MainActivity;
 import com.appzelof.skurring.adapter.RadioStationAdapter;
+import com.appzelof.skurring.model.RadioObject;
 import com.appzelof.skurring.services.RadioData;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class StationsFragment extends Fragment {
 
@@ -22,6 +31,8 @@ public class StationsFragment extends Fragment {
     private String mParam2;
 
     private RadioStationAdapter radioStationAdapter;
+    private ArrayList<RadioObject> radioStations;
+    private RecyclerView recyclerView;
 
     public StationsFragment() {
         // Required empty public constructor
@@ -52,15 +63,45 @@ public class StationsFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_stations, container, false);
         initializeRecyclerView(v);
+        this.getRadioStationFromFirebase();
         return v;
     }
 
-    public void initializeRadioStationAdapter() {
-        this.radioStationAdapter = new RadioStationAdapter(RadioData.getInstance().getRadioInfoList());
+    public void initializeRadioStationAdapter(boolean fromFirebase) {
+        if (fromFirebase) {
+            this.radioStationAdapter.updateData(radioStations);
+        } else {
+            this.radioStationAdapter = new RadioStationAdapter(RadioData.getInstance().getRadioInfoList());
+        }
     }
 
     public RadioStationAdapter getRadioStationAdapter() {
         return this.radioStationAdapter;
+    }
+
+    private void getRadioStationFromFirebase() {
+        MainActivity.databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                radioStations = new ArrayList<>();
+                for (DataSnapshot myDataSnapshot : dataSnapshot.getChildren()) {
+                    System.out.println(myDataSnapshot.toString());
+                    HashMap radioStation = (HashMap) myDataSnapshot.getValue();
+                    RadioObject radioObject = new RadioObject();
+                    radioObject.initFromFirebase(radioStation);
+                    radioStations.add(new RadioObject().initFromFirebase(radioStation));
+                }
+
+                initializeRadioStationAdapter(true);
+                radioStationAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                //SQL database might be good to atleast get the most updated
+                System.out.println("Error: " + databaseError.getMessage());
+            }
+        });
     }
 
     private void initializeRecyclerView(View v){

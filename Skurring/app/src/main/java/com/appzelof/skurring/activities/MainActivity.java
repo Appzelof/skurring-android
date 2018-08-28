@@ -7,25 +7,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.appzelof.skurring.Interfaces.UpdateMainFragmentUI;
-import com.appzelof.skurring.MyMediaPlayer;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLite.DatabaseManager;
 import com.appzelof.skurring.fragments.MainFragment;
 import com.appzelof.skurring.fragments.StationsFragment;
-import com.appzelof.skurring.model.RadioObject;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity implements UpdateMainFragmentUI {
 
     private FragmentManager fragmentManager;
     MainFragment mainFragment;
 
+    public static DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         initializeComponents();
+        FirebaseDatabase theDatabase = FirebaseDatabase.getInstance();
+        final String radioStationReference = "radiostasjoner";
+        databaseReference = theDatabase.getReference(radioStationReference);
         loadFragment(mainFragment, R.id.main_container);
 
     }
@@ -34,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements UpdateMainFragmen
         fragmentManager = getSupportFragmentManager();
         mainFragment = new MainFragment();
         mainFragment.stationsFragment = new StationsFragment();
-        mainFragment.stationsFragment.initializeRadioStationAdapter();
+        mainFragment.stationsFragment.initializeRadioStationAdapter(false);
         mainFragment.stationsFragment.getRadioStationAdapter().updateMainFragmentUI = this;
         DatabaseManager.INSTANCE = new DatabaseManager(this.getBaseContext());
     }
