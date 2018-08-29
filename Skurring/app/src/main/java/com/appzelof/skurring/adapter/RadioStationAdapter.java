@@ -39,18 +39,14 @@ public class RadioStationAdapter extends RecyclerView.Adapter<RadioViewHolder> {
             @Override
             public void onClick(View v) {
                 System.out.println(position);
-                //Lager et nytt objekt og setter på hvilken plass den skal ha i forhold til MainFragment
                 RadioObject tappedRadioStation = radioObjectArrayList.get(position);
                 tappedRadioStation.setChoosenSpot(MainFragment.changingRadioChannel);
-                //Om plassen i forhold til MainFragment eksisterer i databasen, så blir plassen oppdatert med valgt radio,
-                // ellers blir valgt radiostasjon lagt til med plassen.
-                //Der plassen er index plassen til imageButtonSparseArray.
+
                 if (DatabaseManager.INSTANCE.radioStationDoesntExist()) {
                     DatabaseManager.INSTANCE.addRadioStation(tappedRadioStation);
                     System.out.println("Radio station exists: " + !DatabaseManager.INSTANCE.radioStationDoesntExist());
                 } else {
-                    //Om radiostasjonen eksisterer allerede, så blir den byttet ut med ny ønsket stasjon.
-                    //Sjekker dermed om den ikke blir oppdatert.
+
                     if (!DatabaseManager.INSTANCE.updateRadioStation(tappedRadioStation)) {
                         System.out.println("Kunne ikke oppdatere");
                     }

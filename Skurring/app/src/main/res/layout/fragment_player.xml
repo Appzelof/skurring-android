@@ -4,13 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context=".fragments.PlayerFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/playerBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/black">
+        android:background="@drawable/ripple">
 
         <TextView
             android:id="@+id/radioTitleTextView"
@@ -18,8 +20,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="24dp"
             android:text="NRK"
+            android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -29,23 +32,28 @@
 
         <ImageView
             android:id="@+id/radioLogoImageView"
-            android:layout_width="180dp"
-            android:layout_height="100dp"
-            android:layout_marginEnd="50dp"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="20dp"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="48dp"
             android:src="@drawable/placeholder"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/radioCityLabel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radioTitleTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/radioTitleTextView"
+            app:layout_constraintVertical_bias="0.155" />
 
         <Switch
             android:id="@+id/speedSwitch"
             android:layout_width="44dp"
             android:layout_height="31dp"
-            android:layout_marginBottom="36dp"
+            android:layout_marginBottom="60dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:fontFamily="sans-serif"
             android:text="Switch"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -55,13 +63,16 @@
             android:id="@+id/speedometerImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:src="@drawable/speed"
             app:layout_constraintBottom_toTopOf="@+id/speedSwitch"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioLogoImageView"
+            app:layout_constraintVertical_bias="0.915" />
 
         <ImageView
             android:id="@+id/weatherImageView"
@@ -74,56 +85,70 @@
             app:layout_constraintBottom_toBottomOf="@+id/speedometerImage"
             app:layout_constraintEnd_toStartOf="@+id/speedometerImage"
             app:layout_constraintTop_toTopOf="@+id/speedometerImage"
-            app:layout_constraintVertical_bias="0.055" />
+            app:layout_constraintVertical_bias="0.944" />
 
         <TextView
             android:id="@+id/radioCityLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="30dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:text="OSLO"
             android:textColor="@android:color/white"
             android:textSize="20sp"
-            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/speedometerImage"
             app:layout_constraintEnd_toEndOf="@+id/speedometerImage"
-            app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toStartOf="@+id/speedometerImage" />
 
         <TextView
             android:id="@+id/celciusLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="36dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="12dp"
+            android:fontFamily="sans-serif"
             android:text="33"
             android:textColor="@android:color/white"
             android:textSize="25sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/speedometerImage"
-            app:layout_constraintStart_toEndOf="@+id/speedometerImage"
-            app:layout_constraintTop_toTopOf="@+id/speedometerImage"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintBottom_toTopOf="@+id/weatherImageView"
+            app:layout_constraintEnd_toStartOf="@+id/speedometerImage" />
 
         <TextView
             android:id="@+id/song"
-            android:layout_width="225dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:ellipsize="marquee"
+            android:fontFamily="sans-serif"
+            android:gravity="center_vertical|center_horizontal"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/speedTextView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical|center_horizontal"
+            android:text="0.0"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@+id/radioCityLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radioLogoImageView" />
+            android:textSize="150dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/radioLogoImageView"
+            app:layout_constraintEnd_toEndOf="@+id/radioLogoImageView"
+            app:layout_constraintStart_toStartOf="@+id/radioLogoImageView"
+            app:layout_constraintTop_toTopOf="@+id/radioLogoImageView"
+            app:layout_constraintVertical_bias="0.716" />
 
     </android.support.constraint.ConstraintLayout>
 

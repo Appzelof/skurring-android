@@ -81,6 +81,8 @@ public class MainFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         initializeComponents(v);
         imageButtonHandler();
+
+
         return v;
     }
 
@@ -129,16 +131,15 @@ public class MainFragment extends Fragment {
                     }
             });
 
-            final int chosenRadioStation = i  ;
+            final int choosenRadioStation = i;
             imageButtonSparseArray.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        PlayerFragment playerFragment = new PlayerFragment();
-                        playerFragment.choosenRadioStation = radioList.get(chosenRadioStation);
+                    PlayerFragment playerFragment = new PlayerFragment();
+                    RadioObject radioObject = searchForClickedRadiostation(choosenRadioStation);
+                    if (radioObject != null) {
+                        playerFragment.choosenRadioStation = radioObject;
                         ((MainActivity) getContext()).replaceFragment(playerFragment, R.id.main_container);
-                    } catch (IndexOutOfBoundsException e){
-                        Log.d("TAG", e.getMessage());
                     }
                 }
             });
@@ -155,6 +156,15 @@ public class MainFragment extends Fragment {
         }
     }
 
+    private RadioObject searchForClickedRadiostation(int tapped) {
+        for (RadioObject radioObject: this.radioList) {
+            if (tapped == radioObject.getChoosenSpot()) {
+                return radioObject;
+            }
+        }
+        return null;
+    }
+
     private void sortRadioStationList() {
         this.radioList = DatabaseManager.INSTANCE.getAllSavedStations();
         Collections.sort(radioList, new Comparator<RadioObject>() {
@@ -168,7 +178,4 @@ public class MainFragment extends Fragment {
             }
         });
     }
-
-
-
 }

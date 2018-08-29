@@ -7,17 +7,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.appzelof.skurring.Interfaces.UpdateMainFragmentUI;
-import com.appzelof.skurring.MyMediaPlayer;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLite.DatabaseManager;
 import com.appzelof.skurring.fragments.MainFragment;
 import com.appzelof.skurring.fragments.StationsFragment;
-import com.appzelof.skurring.model.RadioObject;
+import com.appzelof.skurring.locationHandler.LocationHandler;
+import com.appzelof.skurring.networkHandler.XmlDownloader;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity implements UpdateMainFragmentUI {
 
     private FragmentManager fragmentManager;
+
+    private String TAG = "MainActivity";
     MainFragment mainFragment;
+    public static Boolean startedOnce = false;
 
 
     @Override
@@ -27,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements UpdateMainFragmen
 
         initializeComponents();
         loadFragment(mainFragment, R.id.main_container);
+        startedOnce = true;
 
     }
 
@@ -37,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements UpdateMainFragmen
         mainFragment.stationsFragment.initializeRadioStationAdapter();
         mainFragment.stationsFragment.getRadioStationAdapter().updateMainFragmentUI = this;
         DatabaseManager.INSTANCE = new DatabaseManager(this.getBaseContext());
+
     }
 
     public void loadFragment(Fragment fragment, int id){
@@ -62,4 +69,6 @@ public class MainActivity extends AppCompatActivity implements UpdateMainFragmen
     public void updateUI() {
         this.replaceFragment(mainFragment, FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
     }
+
+
 }
