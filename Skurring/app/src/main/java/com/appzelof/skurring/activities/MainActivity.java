@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.appzelof.Enums.DataToAdapterFrom;
 import com.appzelof.skurring.Interfaces.UpdateMainFragmentUI;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLite.DatabaseManager;
@@ -39,9 +40,10 @@ public class MainActivity extends AppCompatActivity implements UpdateMainFragmen
         fragmentManager = getSupportFragmentManager();
         mainFragment = new MainFragment();
         mainFragment.stationsFragment = new StationsFragment();
-        mainFragment.stationsFragment.initializeRadioStationAdapter(false);
+        mainFragment.stationsFragment.initializeRadioStationAdapter(DataToAdapterFrom.INAPP, null);
         mainFragment.stationsFragment.getRadioStationAdapter().updateMainFragmentUI = this;
         DatabaseManager.INSTANCE = new DatabaseManager(this.getBaseContext());
+        com.appzelof.skurring.SQLiteFirebase.DatabaseManager.INSTANCE = new com.appzelof.skurring.SQLiteFirebase.DatabaseManager(this.getBaseContext());
     }
 
     public void loadFragment(Fragment fragment, int id){
