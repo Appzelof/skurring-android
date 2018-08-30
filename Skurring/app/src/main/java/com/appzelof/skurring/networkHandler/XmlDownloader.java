@@ -1,40 +1,39 @@
 package com.appzelof.skurring.networkHandler;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 
-import com.appzelof.skurring.Interfaces.UpdateWeatherUI;
+import com.appzelof.skurring.Interfaces.UpdateWeatherInfo;
 import com.appzelof.skurring.networkHandler.xmlParser.XmlDataParser;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class XmlDownloader extends AsyncTask<String, Void, String> {
 
-    private UpdateWeatherUI updateWeatherUI;
+    private Context context;
+    private UpdateWeatherInfo updateWeatherInfo;
 
-    public XmlDownloader(UpdateWeatherUI updateWeatherUI) {
-        this.updateWeatherUI = updateWeatherUI;
+    public XmlDownloader(Context context, UpdateWeatherInfo updateWeatherInfo) {
+    this.context = context;
+    this.updateWeatherInfo = updateWeatherInfo;
 
     }
 
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
-        XmlDataParser xmlDataParser = new XmlDataParser(updateWeatherUI);
-        xmlDataParser.parseXmlData(s);
-        xmlDataParser.getList();
+        XmlDataParser xmlDataParser = new XmlDataParser(context, updateWeatherInfo);
+        if (s != null) {
+            xmlDataParser.parseXmlData(s);
+        } else {
+            System.out.println("No correct url");
+        }
 
     }
 

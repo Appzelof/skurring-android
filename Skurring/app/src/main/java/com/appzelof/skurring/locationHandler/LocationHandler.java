@@ -11,16 +11,18 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 
-import com.appzelof.skurring.Interfaces.UpdatePlayerUI;
+import com.appzelof.skurring.Interfaces.UpdateLocationInfo;
+import com.appzelof.skurring.activities.MainActivity;
+import com.appzelof.skurring.sharePrefsManager.SharePrefsManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,17 +32,21 @@ public class LocationHandler {
     private Context context;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationManager locationManager;
-    private UpdatePlayerUI updatePlayerUI;
+    private UpdateLocationInfo updateLocationInfo;
+    private Geocoder geocoder;
+    private SharePrefsManager sharePrefsManager;
 
-
-    public LocationHandler(Context context, UpdatePlayerUI updatePlayerUI) {
-        this.updatePlayerUI = updatePlayerUI;
+    public LocationHandler(Context context, UpdateLocationInfo updateLocationInfo) {
+        this.updateLocationInfo = updateLocationInfo;
         this.context = context;
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        geocoder = new Geocoder(context, Locale.getDefault());
+        sharePrefsManager = new SharePrefsManager(context);
+
     }
 
-    public void getLastKnownLocation(Activity activity){
+    public void getLastKnownLocation(final Activity activity){
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(activity, new String[]{
@@ -50,7 +56,8 @@ public class LocationHandler {
                 fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        getLocation(location.getLatitude(), location.getLongitude(), "");
+                        getLocationByGoogle(location.getLatitude(), location.getLongitude());
+
                     }
                 });
 
@@ -59,8 +66,8 @@ public class LocationHandler {
                 public void onLocationChanged(Location location) {
                     float speed = location.getSpeed() * 3600/1000;
                     DecimalFormat decimalFormat = new DecimalFormat("###.#");
-                    getLocation(location.getLatitude(), location.getLongitude(), decimalFormat.format(speed));
-
+                    updateLocationInfo.updateSpeedInfo(decimalFormat.format(speed));
+                    getSubAdminArea(location.getLatitude(), location.getLongitude());
 
                 }
 
@@ -85,20 +92,29 @@ public class LocationHandler {
 
     }
 
-    private void getLocation(Double lat, Double lon, String speed) {
+    private void getSubAdminArea(Double lat, Double lon){
         try {
-            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+
+                List<Address> addresses = geocoder.getFromLocation(lat, lon, 1);
+                String subAdminArea = addresses.get(0).getSubAdminArea();
+                updateLocationInfo.updateAdminArea(subAdminArea);
+
+
+        } catch (IOException e){
+            e.getMessage();
+        }
+    }
+
+
+    private void getLocationByGoogle(Double lat, Double lon) {
+        try {
+
             List<Address> addresses = geocoder.getFromLocation(lat, lon, 1);
-            String adminArea = addresses.get(0).getAdminArea();
-            String locality = addresses.get(0).getLocality();
             String country = addresses.get(0).getCountryName();
-            String subLocality = addresses.get(0).getSubLocality();
-
-            System.out.println("###################################");
-
-            updatePlayerUI.updateLocationInfo(country, adminArea, locality, subLocality);
-            updatePlayerUI.updateSpeedInfo(speed);
-
+            String postalCode = addresses.get(0).getPostalCode();
+            String subAdminArea = addresses.get(0).getSubAdminArea();
+            updateLocationInfo.updateLocationInfo(country, subAdminArea, postalCode);
+            sharePrefsManager.saveString("city", subAdminArea);
 
         } catch (IOException e) {
             e.getMessage();

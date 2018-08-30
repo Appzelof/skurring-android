@@ -1,6 +1,10 @@
 package com.appzelof.skurring.networkHandler.xmlParser;
 
-import com.appzelof.skurring.Interfaces.UpdateWeatherUI;
+import android.content.Context;
+
+import com.appzelof.skurring.Interfaces.UpdateLocationInfo;
+import com.appzelof.skurring.Interfaces.UpdateWeatherInfo;
+import com.appzelof.skurring.sharePrefsManager.SharePrefsManager;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -9,26 +13,26 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class XmlDataParser {
 
     private ArrayList<String> tempArrayList;
     private ArrayList<String> iconArrayList;
-    private UpdateWeatherUI updateWeatherUI;
-    private HashMap<String, String> test;
+    private SharePrefsManager sharePrefsManager;
+    private UpdateWeatherInfo updateWeatherInfo;
 
-    public XmlDataParser(UpdateWeatherUI updateWeatherUI) {
+
+    public XmlDataParser(Context context, UpdateWeatherInfo updateWeatherInfo) {
         tempArrayList = new ArrayList<>();
-        this.updateWeatherUI = updateWeatherUI;
-        HashMap<String, String> test = new HashMap<>();
+        iconArrayList = new ArrayList<>();
+        sharePrefsManager = new SharePrefsManager(context);
+        this.updateWeatherInfo = updateWeatherInfo;
     }
 
     public void parseXmlData(String xmlData) {
         Boolean inEntry = false;
-        String textValue;
-        String temp = null;
-        String icon = null;
+        String temp;
+        String icon;
 
         try {
             XmlPullParserFactory xmlPullParserFactory = XmlPullParserFactory.newInstance();
@@ -44,24 +48,29 @@ public class XmlDataParser {
                             inEntry = true;
                         }
                         break;
-
                     case XmlPullParser.END_TAG:
                         if (inEntry) {
                             if ("symbol".equalsIgnoreCase(tagName)) {
-                                //icon = xpp.getAttributeValue(3);
-                            } else if ("temperature".equalsIgnoreCase(tagName)) {
-                                if (tagName != null) {
-                                    temp = xpp.getAttributeValue(1);
-                                    test.put(tagName, tagName);
+                                if (xpp.getAttributeCount() == 4) {
+                                    icon = xpp.getAttributeValue(3);
+                                    iconArrayList.add(icon);
+                                    sharePrefsManager.saveString("symbol", (iconArrayList.get(0)));
+                                    updateWeatherInfo.parsed(true);
                                 }
-
+                            } else if ("temperature".equalsIgnoreCase(tagName)) {
+                                if (xpp.getAttributeCount() == 2) {
+                                    temp = xpp.getAttributeValue(1);
+                                    tempArrayList.add(temp);
+                                    sharePrefsManager.saveString("temp", tempArrayList.get(0));
+                                    updateWeatherInfo.parsed(true);
+                                }
                             }
-                            tempArrayList.add(temp);
 
                             break;
                         }
                     default:
                 }
+
                 eventType = xpp.next();
 
             }
@@ -72,9 +81,5 @@ public class XmlDataParser {
             e.printStackTrace();
         }
 
-    }
-
-    public void getList(){
-        updateWeatherUI.getTempArray(tempArrayList);
     }
 }

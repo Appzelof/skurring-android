@@ -8,21 +8,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.appzelof.skurring.Interfaces.StreamInfoUpdate;
-import com.appzelof.skurring.Interfaces.UpdatePlayerUI;
-import com.appzelof.skurring.Interfaces.UpdateWeatherUI;
+import com.appzelof.skurring.Interfaces.UpdateLocationInfo;
+import com.appzelof.skurring.Interfaces.UpdateWeatherInfo;
 import com.appzelof.skurring.MyMediaPlayer;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.activities.MainActivity;
 import com.appzelof.skurring.locationHandler.LocationHandler;
 import com.appzelof.skurring.model.RadioObject;
 import com.appzelof.skurring.networkHandler.XmlDownloader;
+import com.appzelof.skurring.sharePrefsManager.SharePrefsManager;
 import com.google.android.gms.common.api.GoogleApiClient;
-
-import java.util.ArrayList;
 
 
 /**
@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * Use the {@link PlayerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PlayerFragment extends Fragment implements StreamInfoUpdate, UpdatePlayerUI, UpdateWeatherUI {
+public class PlayerFragment extends Fragment implements StreamInfoUpdate, UpdateLocationInfo, UpdateWeatherInfo {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -44,15 +44,22 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
     private TextView radioChannelName, cityName, degrees, songView, speedTextView;
     private ImageView channelImage, weatherImage, speedometerImage;
     private ConstraintLayout constraintLayout;
+    private ProgressBar weatherProgressBar;
+    private ProgressBar tempProgressBar;
     private Switch speedSwitcher;
-    private Boolean running;
-    private ArrayList<String> tempArrayList;
+    private SharePrefsManager sharePrefsManager;
+    private XmlDownloader xmlDownloader;
+    private LocationHandler locationHandler;
+    private Boolean checked;
+    private static String WEATHER_URL;
+
 
     private GoogleApiClient googleApiClient;
 
 
     public PlayerFragment() {
         // Required empty public constructor
+
     }
 
 
@@ -87,9 +94,11 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
         MyMediaPlayer.INSTANCE = new MyMediaPlayer();
         MyMediaPlayer.INSTANCE.initAndPrepareAndPlay(this.choosenRadioStation.getUrl());
         MyMediaPlayer.INSTANCE.streamInfoUpdate = this;
-        LocationHandler locationHandler = new LocationHandler(getContext(), this);
+        locationHandler = new LocationHandler(getContext(), this);
         locationHandler.getLastKnownLocation(getActivity());
+        sharePrefsManager = new SharePrefsManager(getContext());
         switchHandler();
+        checked = false;
 
         return v;
     }
@@ -99,7 +108,8 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
         this.weatherImage = v.findViewById(R.id.weatherImageView);
         this.speedometerImage = v.findViewById(R.id.speedometerImage);
         this.speedTextView = v.findViewById(R.id.speedTextView);
-
+        this.tempProgressBar = v.findViewById(R.id.degreesProgressBar2);
+        this.weatherProgressBar = v.findViewById(R.id.sunProgressBar);
         this.constraintLayout = v.findViewById(R.id.playerBackground);
 
         this.radioChannelName = v.findViewById(R.id.radioTitleTextView);
@@ -111,7 +121,7 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
         this.songView = v.findViewById(R.id.song);
         this.songView.setSelected(true);
 
-        running = false;
+
     }
 
     private void initUI() {
@@ -120,7 +130,7 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
     }
 
 
-    private void initializeBtns(){
+    private void initializeBtns() {
         constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,7 +139,7 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
         });
     }
 
-    private void switchHandler(){
+    private void switchHandler() {
         speedSwitcher.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -154,17 +164,51 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
 
 
     @Override
-    public void updateLocationInfo(String country, String adminArea, String locality, String subLocality) {
-        cityName.setText(locality);
-        if (!running && MainActivity.startedOnce) {
-            String weatherUrl = "http://www.yr.no/place/" + country + "/" + adminArea + "/" + locality + "/" + subLocality + "/forecast.xml";
-            System.out.println(weatherUrl);
-            XmlDownloader xmlDownloader = new XmlDownloader(this);
-            xmlDownloader.execute(weatherUrl);
-            running = true;
-            MainActivity.startedOnce = false;
-        }
+    public void updateLocationInfo(String country, String adminArea, String postalNumber) {
+        WEATHER_URL = "https://www.yr.no/place/" + country + "/Postnummer/" + postalNumber + "/forecast.xml";
+        XmlDownloader xmlDownloader = new XmlDownloader(getContext(), this);
+        xmlDownloader.execute(WEATHER_URL);
+        sharePrefsManager.saveString("city", adminArea);
+        cityName.setText(adminArea);
+        System.out.println("Runned one time");
+        checked = true;
+        updateUI.update(checked);
 
+    }
+
+    @Override
+    public void parsed(Boolean parsed) {
+        if (parsed){
+            loadIconAndTemp();
+        }
+    }
+
+
+    private interface UpdateUI{
+        void update(Boolean checked);
+    }
+
+    UpdateUI updateUI = new UpdateUI() {
+        @Override
+        public void update(Boolean checked) {
+            if (checked){
+                loadIconAndTemp();
+            }
+        }
+    };
+
+    @Override
+    public void updateAdminArea(String adminArea) {
+        cityName.setText(adminArea);
+        if (!adminArea.equalsIgnoreCase(sharePrefsManager.getString("city")) && checked){
+            XmlDownloader xmlDownloader = new XmlDownloader(getContext(),this);
+            xmlDownloader.execute(WEATHER_URL);
+            sharePrefsManager.saveString("city", adminArea);
+            updateUI.update(checked);
+            checked = false;
+        } else {
+            System.out.println("TEST");
+        }
     }
 
     @Override
@@ -173,15 +217,16 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
 
     }
 
-    @Override
-    public void getTempArray(ArrayList<String> temperatures) {
-        for (String t : temperatures){
-            System.out.println(t);
-        }
+    private void loadIconAndTemp(){
+        String savedImage = sharePrefsManager.getString("symbol");
+        int id = getContext().getResources().getIdentifier("drawable/" + "y" + savedImage, null, getContext().getPackageName());
+        String temp = sharePrefsManager.getString("temp");
+
+        tempProgressBar.setVisibility(View.INVISIBLE);
+        weatherProgressBar.setVisibility(View.INVISIBLE);
+        degrees.setText(temp + "º");
+        weatherImage.setImageResource(id);
+
     }
 
-    @Override
-    public void getIconArray(ArrayList<String> iconArray) {
-
-    }
 }

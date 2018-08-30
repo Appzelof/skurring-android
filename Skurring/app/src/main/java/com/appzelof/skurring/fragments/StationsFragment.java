@@ -2,6 +2,7 @@ package com.appzelof.skurring.fragments;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,9 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.appzelof.Enums.DataToAdapterFrom;
 import com.appzelof.skurring.R;
+import com.appzelof.skurring.SQLiteFirebase.DatabaseManager;
+import com.appzelof.skurring.activities.MainActivity;
 import com.appzelof.skurring.adapter.RadioStationAdapter;
+import com.appzelof.skurring.model.RadioObject;
 import com.appzelof.skurring.services.RadioData;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 
 public class StationsFragment extends Fragment {
 
@@ -22,6 +34,8 @@ public class StationsFragment extends Fragment {
     private String mParam2;
 
     private RadioStationAdapter radioStationAdapter;
+    private ArrayList<RadioObject> radioStations;
+    private RecyclerView recyclerView;
 
     public StationsFragment() {
         // Required empty public constructor
@@ -52,15 +66,109 @@ public class StationsFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_stations, container, false);
         initializeRecyclerView(v);
+        this.getRadioStationFromFirebase();
         return v;
     }
 
-    public void initializeRadioStationAdapter() {
-        this.radioStationAdapter = new RadioStationAdapter(RadioData.getInstance().getRadioInfoList());
+    public void initializeRadioStationAdapter(DataToAdapterFrom dataToAdapterFrom, ArrayList<RadioObject> arrayList) {
+        switch (dataToAdapterFrom) {
+            case FIREBASE:
+                this.radioStationAdapter.updateData(arrayList);
+                break;
+            case INAPP:
+                this.radioStationAdapter = new RadioStationAdapter(sortList(RadioData.getInstance().getRadioInfoList()));
+                break;
+            case SQLITE:
+                this.radioStationAdapter.updateData(arrayList);
+                break;
+            case INAPPUPDATE:
+                this.radioStationAdapter.updateData(arrayList);
+                break;
+                default: break;
+        }
+    }
+
+    private ArrayList<RadioObject> sortList(ArrayList<RadioObject> arrayList) {
+        java.util.Collections.sort(arrayList, new Comparator<RadioObject>() {
+            @Override
+            public int compare(RadioObject o, RadioObject t1) {
+                return o.getName().compareTo(t1.getName());
+            }
+        });
+        return arrayList;
     }
 
     public RadioStationAdapter getRadioStationAdapter() {
         return this.radioStationAdapter;
+    }
+
+    private void getRadioStationFromFirebase() {
+        MainActivity.databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                radioStations = new ArrayList<>();
+                for (DataSnapshot myDataSnapshot : dataSnapshot.getChildren()) {
+                    HashMap radioStation = (HashMap) myDataSnapshot.getValue();
+                    RadioObject radioObject = new RadioObject();
+                    radioObject.initFromFirebase(radioStation);
+                    radioStations.add(new RadioObject().initFromFirebase(radioStation));
+                }
+
+                initializeRadioStationAdapter(DataToAdapterFrom.FIREBASE, handleSQLiteList().get(0));
+                radioStationAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                //SQL database might be good to atleast get the most updated
+                ArrayList<RadioObject> savedList = DatabaseManager.INSTANCE.getAllRadioStations();
+                if (!savedList.isEmpty()) {
+                    System.out.println("Using SQLite!");
+                    initializeRadioStationAdapter(DataToAdapterFrom.SQLITE, sortList(savedList));
+                } else {
+                    System.out.println("Using IN APP objects!");
+                    initializeRadioStationAdapter(DataToAdapterFrom.INAPPUPDATE, sortList(RadioData.getInstance().getRadioInfoList()));
+                }
+                System.out.println("Error: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    private ArrayList<ArrayList<RadioObject>> handleSQLiteList() {
+        ArrayList<RadioObject> sortedListFromFirebase = sortList(radioStations);
+        ArrayList<RadioObject> sortedSavedFirebaseList = sortList(DatabaseManager.INSTANCE.getAllRadioStations());
+
+        if (sortedSavedFirebaseList.isEmpty()) {
+            DatabaseManager.INSTANCE.addRadioStations(sortedListFromFirebase);
+        } else {
+            if (sortedListFromFirebase.size() == sortedSavedFirebaseList.size()) {
+                int index = 0;
+                boolean isTheSame = true;
+                for (RadioObject radioObject: sortedListFromFirebase) {
+                    if (!radioObject.getName().equals(sortedSavedFirebaseList.get(index).getName())
+                            && radioObject.getRadioImage() != sortedSavedFirebaseList.get(index).getRadioImage()
+                            && !radioObject.getUrl().equals(sortedSavedFirebaseList.get(index).getUrl())) {
+                        isTheSame = false;
+                        break;
+                    }
+                    index += 1;
+                }
+                if (!isTheSame) {
+                    reCreateTable();
+                }
+            } else {
+                reCreateTable();
+            }
+        }
+        ArrayList<ArrayList<RadioObject>> sortedLists = new ArrayList<>();
+        sortedLists.add(sortedListFromFirebase);
+        sortedLists.add(sortedSavedFirebaseList);
+        return sortedLists;
+    }
+
+    private void reCreateTable() {
+        DatabaseManager.INSTANCE.reCreateTable();
+        DatabaseManager.INSTANCE.addRadioStations(radioStations);
     }
 
     private void initializeRecyclerView(View v){

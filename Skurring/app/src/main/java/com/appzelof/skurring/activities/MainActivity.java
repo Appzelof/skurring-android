@@ -6,33 +6,41 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.appzelof.Enums.DataToAdapterFrom;
 import com.appzelof.skurring.Interfaces.UpdateMainFragmentUI;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLite.DatabaseManager;
 import com.appzelof.skurring.fragments.MainFragment;
 import com.appzelof.skurring.fragments.StationsFragment;
-import com.appzelof.skurring.locationHandler.LocationHandler;
-import com.appzelof.skurring.networkHandler.XmlDownloader;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+
+import com.appzelof.skurring.sharePrefsManager.SharePrefsManager;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity implements UpdateMainFragmentUI {
 
     private FragmentManager fragmentManager;
 
     private String TAG = "MainActivity";
+    private SharePrefsManager sharePrefsManager;
     MainFragment mainFragment;
     public static Boolean startedOnce = false;
 
+    public static DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharePrefsManager = new SharePrefsManager(this);
+
 
         initializeComponents();
+        FirebaseDatabase theDatabase = FirebaseDatabase.getInstance();
+        final String radioStationReference = "radiostasjoner";
+        databaseReference = theDatabase.getReference(radioStationReference);
         loadFragment(mainFragment, R.id.main_container);
-        startedOnce = true;
+
 
     }
 
@@ -40,9 +48,11 @@ public class MainActivity extends AppCompatActivity implements UpdateMainFragmen
         fragmentManager = getSupportFragmentManager();
         mainFragment = new MainFragment();
         mainFragment.stationsFragment = new StationsFragment();
-        mainFragment.stationsFragment.initializeRadioStationAdapter();
+        mainFragment.stationsFragment.initializeRadioStationAdapter(DataToAdapterFrom.INAPP, null);
         mainFragment.stationsFragment.getRadioStationAdapter().updateMainFragmentUI = this;
         DatabaseManager.INSTANCE = new DatabaseManager(this.getBaseContext());
+
+        com.appzelof.skurring.SQLiteFirebase.DatabaseManager.INSTANCE = new com.appzelof.skurring.SQLiteFirebase.DatabaseManager(this.getBaseContext());
 
     }
 
@@ -70,5 +80,10 @@ public class MainActivity extends AppCompatActivity implements UpdateMainFragmen
         this.replaceFragment(mainFragment, FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sharePrefsManager.saveInt("icon", 0);
+        sharePrefsManager.saveString("temp", null);
+    }
 }

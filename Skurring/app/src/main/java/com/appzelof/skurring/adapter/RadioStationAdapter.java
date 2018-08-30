@@ -25,6 +25,10 @@ public class RadioStationAdapter extends RecyclerView.Adapter<RadioViewHolder> {
         this.radioObjectArrayList = radioObjectArrayList;
     }
 
+    public void updateData(ArrayList<RadioObject> radioObjectArrayList) {
+        this.radioObjectArrayList = radioObjectArrayList;
+    }
+
     @NonNull
     @Override
     public RadioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

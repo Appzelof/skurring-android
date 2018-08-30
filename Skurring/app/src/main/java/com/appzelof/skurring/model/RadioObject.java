@@ -1,6 +1,8 @@
 package com.appzelof.skurring.model;
 
 
+import java.util.HashMap;
+
 public class RadioObject {
     private String url;
     private String name;
@@ -16,8 +18,19 @@ public class RadioObject {
 
     public RadioObject() {}
 
+    public RadioObject initFromFirebase(HashMap map) {
+        setUrl((String) map.get("radioUrl"));
+        setName((String) map.get("radioNavn"));
+        setFirebaseImage((Long) map.get("androidImageInt"));
+        return this;
+    }
+
     public String getUrl() {
-        return url;
+        if (this.url != null) {
+            return url;
+        } else {
+            return "";
+        }
     }
 
     public void setUrl(String url) {
@@ -25,7 +38,11 @@ public class RadioObject {
     }
 
     public String getName() {
-        return name;
+        if (this.name != null) {
+            return this.name;
+        } else {
+            return "";
+        }
     }
 
     public void setName(String name) {
@@ -33,7 +50,11 @@ public class RadioObject {
     }
 
     public int getRadioImage() {
-        return radioImage;
+        return this.radioImage;
+    }
+
+    public void setFirebaseImage(Long radioImage) {
+        this.radioImage = radioImage.intValue();
     }
 
     public void setRadioImage(int radioImage) {

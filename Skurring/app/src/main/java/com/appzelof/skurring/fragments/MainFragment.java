@@ -20,6 +20,7 @@ import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLite.DatabaseManager;
 import com.appzelof.skurring.activities.MainActivity;
 import com.appzelof.skurring.model.RadioObject;
+import com.appzelof.skurring.sharePrefsManager.SharePrefsManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +50,7 @@ public class MainFragment extends Fragment {
     public StationsFragment stationsFragment;
     public static int changingRadioChannel = 0;
     private ArrayList<RadioObject> radioList;
+
 
 
     public MainFragment() {
@@ -81,6 +83,7 @@ public class MainFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         initializeComponents(v);
         imageButtonHandler();
+
 
 
         return v;

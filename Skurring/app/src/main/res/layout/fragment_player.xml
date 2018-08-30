@@ -14,6 +14,18 @@
         android:layout_height="match_parent"
         android:background="@drawable/ripple">
 
+        <ProgressBar
+            android:id="@+id/degreesProgressBar2"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/speedometerImage"
+            app:layout_constraintEnd_toStartOf="@+id/speedometerImage"
+            app:layout_constraintTop_toTopOf="@+id/speedometerImage"
+            app:layout_constraintVertical_bias="1.0" />
+
         <TextView
             android:id="@+id/radioTitleTextView"
             android:layout_width="wrap_content"
@@ -44,7 +56,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/radioTitleTextView"
-            app:layout_constraintVertical_bias="0.155" />
+            app:layout_constraintVertical_bias="0.642" />
 
         <Switch
             android:id="@+id/speedSwitch"
@@ -78,20 +90,17 @@
             android:id="@+id/weatherImageView"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="24dp"
-            android:src="@drawable/y01d"
+            android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toBottomOf="@+id/speedometerImage"
             app:layout_constraintEnd_toStartOf="@+id/speedometerImage"
             app:layout_constraintTop_toTopOf="@+id/speedometerImage"
-            app:layout_constraintVertical_bias="0.944" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/radioCityLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="12dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:textColor="@android:color/white"
@@ -104,14 +113,16 @@
             android:id="@+id/celciusLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="12dp"
+            android:layout_marginTop="8dp"
             android:fontFamily="sans-serif"
-            android:text="33"
             android:textColor="@android:color/white"
             android:textSize="25sp"
-            app:layout_constraintBottom_toTopOf="@+id/weatherImageView"
-            app:layout_constraintEnd_toStartOf="@+id/speedometerImage" />
+            app:layout_constraintBottom_toTopOf="@+id/speedSwitch"
+            app:layout_constraintEnd_toStartOf="@+id/speedometerImage"
+            app:layout_constraintTop_toTopOf="@+id/speedometerImage"
+            app:layout_constraintVertical_bias="0.95" />
 
         <TextView
             android:id="@+id/song"
@@ -149,6 +160,17 @@
             app:layout_constraintStart_toStartOf="@+id/radioLogoImageView"
             app:layout_constraintTop_toTopOf="@+id/radioLogoImageView"
             app:layout_constraintVertical_bias="0.716" />
+
+        <ProgressBar
+            android:id="@+id/sunProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/speedometerImage"
+            app:layout_constraintEnd_toStartOf="@+id/speedometerImage"
+            app:layout_constraintTop_toTopOf="@+id/speedometerImage"
+            app:layout_constraintVertical_bias="0.0" />
 
     </android.support.constraint.ConstraintLayout>
 
