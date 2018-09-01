@@ -126,9 +126,10 @@
 
         <TextView
             android:id="@+id/song"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="310dp"
+            android:layout_height="32dp"
             android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="marquee"
             android:fontFamily="sans-serif"
             android:gravity="center_vertical|center_horizontal"
@@ -139,8 +140,7 @@
             android:textColor="@android:color/white"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintEnd_toStartOf="@+id/albumImage"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -171,6 +171,16 @@
             app:layout_constraintEnd_toStartOf="@+id/speedometerImage"
             app:layout_constraintTop_toTopOf="@+id/speedometerImage"
             app:layout_constraintVertical_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/albumImage"
+            android:layout_width="31dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 

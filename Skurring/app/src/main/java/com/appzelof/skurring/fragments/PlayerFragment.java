@@ -1,5 +1,6 @@
 package com.appzelof.skurring.fragments;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.appzelof.skurring.Interfaces.ImageDownloaded;
 import com.appzelof.skurring.Interfaces.StreamInfoUpdate;
 import com.appzelof.skurring.Interfaces.UpdateLocationInfo;
 import com.appzelof.skurring.Interfaces.UpdateWeatherInfo;
@@ -19,10 +21,14 @@ import com.appzelof.skurring.MyMediaPlayer;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.activities.MainActivity;
 import com.appzelof.skurring.locationHandler.LocationHandler;
+import com.appzelof.skurring.model.PotentialMetadataJSONObject;
 import com.appzelof.skurring.model.RadioObject;
+import com.appzelof.skurring.networkHandler.ImageDownloader;
 import com.appzelof.skurring.networkHandler.XmlDownloader;
 import com.appzelof.skurring.sharePrefsManager.SharePrefsManager;
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import org.json.JSONObject;
 
 
 /**
@@ -30,7 +36,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
  * Use the {@link PlayerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PlayerFragment extends Fragment implements StreamInfoUpdate, UpdateLocationInfo, UpdateWeatherInfo {
+public class PlayerFragment extends Fragment implements StreamInfoUpdate, UpdateLocationInfo, UpdateWeatherInfo, ImageDownloaded {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -42,7 +48,7 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
 
     public RadioObject choosenRadioStation;
     private TextView radioChannelName, cityName, degrees, songView, speedTextView;
-    private ImageView channelImage, weatherImage, speedometerImage;
+    private ImageView channelImage, weatherImage, speedometerImage, albumImage;
     private ConstraintLayout constraintLayout;
     private ProgressBar weatherProgressBar;
     private ProgressBar tempProgressBar;
@@ -52,6 +58,7 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
     private LocationHandler locationHandler;
     private Boolean checked;
     private static String WEATHER_URL;
+    private ImageDownloader imageDownloader;
 
 
     private GoogleApiClient googleApiClient;
@@ -111,6 +118,7 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
         this.tempProgressBar = v.findViewById(R.id.degreesProgressBar2);
         this.weatherProgressBar = v.findViewById(R.id.sunProgressBar);
         this.constraintLayout = v.findViewById(R.id.playerBackground);
+        this.albumImage = v.findViewById(R.id.albumImage);
 
         this.radioChannelName = v.findViewById(R.id.radioTitleTextView);
         this.cityName = v.findViewById(R.id.radioCityLabel);
@@ -158,8 +166,35 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
 
 
     @Override
-    public void getInfo(String info) {
-        this.songView.setText(info);
+    public void getInfo(String album, String artist, PotentialMetadataJSONObject potentialMetadataJSONObject) {
+        String viewString = "";
+        if (potentialMetadataJSONObject != null) {
+            if (!potentialMetadataJSONObject.getTitle().equals("")) {
+                viewString += potentialMetadataJSONObject.getTitle();
+            }
+            if (!potentialMetadataJSONObject.getArtist().equals("")) {
+                viewString += " - ";
+                viewString += potentialMetadataJSONObject.getArtist();
+            }
+            if (!potentialMetadataJSONObject.getImageUrl().equals("")) {
+                this.imageDownloader = new ImageDownloader();
+                this.imageDownloader.imageDownloaded = this;
+                this.imageDownloader.downloadImageFromPureUrl(potentialMetadataJSONObject.getImageUrl());
+            }
+            this.songView.setText(viewString);
+        } else {
+            if (!album.equals("") && !artist.equals("")) {
+                viewString += album + " - " + artist;
+                this.songView.setText(viewString);
+            } else {
+                this.songView.setText(album);
+            }
+        }
+    }
+
+    @Override
+    public void imageDownloaded(Bitmap imageDownloaded) {
+        this.albumImage.setImageBitmap(imageDownloaded);
     }
 
 

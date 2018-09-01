@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.appzelof.Enums.DataToAdapterFrom;
+import com.appzelof.skurring.networkHandler.InternetAccessChecker;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLiteFirebase.DatabaseManager;
 import com.appzelof.skurring.activities.MainActivity;
@@ -35,7 +36,7 @@ public class StationsFragment extends Fragment {
 
     private RadioStationAdapter radioStationAdapter;
     private ArrayList<RadioObject> radioStations;
-    private RecyclerView recyclerView;
+    private InternetAccessChecker internetAccessChecker;
 
     public StationsFragment() {
         // Required empty public constructor
@@ -65,6 +66,7 @@ public class StationsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_stations, container, false);
+        internetAccessChecker = new InternetAccessChecker();
         initializeRecyclerView(v);
         this.getRadioStationFromFirebase();
         return v;
@@ -103,37 +105,46 @@ public class StationsFragment extends Fragment {
     }
 
     private void getRadioStationFromFirebase() {
-        MainActivity.databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                radioStations = new ArrayList<>();
-                for (DataSnapshot myDataSnapshot : dataSnapshot.getChildren()) {
-                    HashMap radioStation = (HashMap) myDataSnapshot.getValue();
-                    RadioObject radioObject = new RadioObject();
-                    radioObject.initFromFirebase(radioStation);
-                    radioStations.add(new RadioObject().initFromFirebase(radioStation));
+        if (this.internetAccessChecker.haveInternetConnection(this.getContext())) {
+            MainActivity.databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    radioStations = new ArrayList<>();
+                    for (DataSnapshot myDataSnapshot : dataSnapshot.getChildren()) {
+                        HashMap radioStation = (HashMap) myDataSnapshot.getValue();
+                        RadioObject radioObject = new RadioObject();
+                        radioObject.initFromFirebase(radioStation);
+                        radioStations.add(new RadioObject().initFromFirebase(radioStation));
+                    }
+
+                    initializeRadioStationAdapter(DataToAdapterFrom.FIREBASE, handleSQLiteList().get(0));
+                    radioStationAdapter.notifyDataSetChanged();
                 }
 
-                initializeRadioStationAdapter(DataToAdapterFrom.FIREBASE, handleSQLiteList().get(0));
-                radioStationAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                //SQL database might be good to atleast get the most updated
-                ArrayList<RadioObject> savedList = DatabaseManager.INSTANCE.getAllRadioStations();
-                if (!savedList.isEmpty()) {
-                    System.out.println("Using SQLite!");
-                    initializeRadioStationAdapter(DataToAdapterFrom.SQLITE, sortList(savedList));
-                } else {
-                    System.out.println("Using IN APP objects!");
-                    initializeRadioStationAdapter(DataToAdapterFrom.INAPPUPDATE, sortList(RadioData.getInstance().getRadioInfoList()));
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    configureRadioListIfNoInternetOrCanceled();
+                    System.out.println("Error: " + databaseError.getMessage());
                 }
-                System.out.println("Error: " + databaseError.getMessage());
-            }
-        });
+            });
+        } else {
+            configureRadioListIfNoInternetOrCanceled();
+        }
+
     }
 
+    private void configureRadioListIfNoInternetOrCanceled() {
+        ArrayList<RadioObject> savedList = DatabaseManager.INSTANCE.getAllRadioStations();
+        if (!savedList.isEmpty()) {
+            System.out.println("Using SQLite!");
+            initializeRadioStationAdapter(DataToAdapterFrom.SQLITE, sortList(savedList));
+        } else {
+            System.out.println("Using IN APP objects!");
+            initializeRadioStationAdapter(DataToAdapterFrom.INAPPUPDATE, sortList(RadioData.getInstance().getRadioInfoList()));
+        }
+    }
+
+    //If downloading radio objects from firebase, then SQLlite is populated with new data if there has been any changes in firebase.
     private ArrayList<ArrayList<RadioObject>> handleSQLiteList() {
         ArrayList<RadioObject> sortedListFromFirebase = sortList(radioStations);
         ArrayList<RadioObject> sortedSavedFirebaseList = sortList(DatabaseManager.INSTANCE.getAllRadioStations());
