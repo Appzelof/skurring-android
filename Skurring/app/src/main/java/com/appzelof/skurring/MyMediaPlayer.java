@@ -104,13 +104,7 @@ public class MyMediaPlayer implements MediaPlayer.OnPreparedListener {
                     } else if (info.contains(" med ")) {
                         metaInfo = info.split(" med ");
                     } else {
-                        if (info.contains(".")) {
-                            metaInfo = info.split(".");
-                        } else if (info.contains(" . ")) {
-                            metaInfo = info.split(" . ");
-                        } else {
-                            pureInfo = true;
-                        }
+                        pureInfo = true;
                     }
                 }
             }
@@ -130,6 +124,9 @@ public class MyMediaPlayer implements MediaPlayer.OnPreparedListener {
                         PotentialMetadataJSONObject potentialMetadataJSONObject = new PotentialMetadataJSONObject(extractedJSON);
                         streamInfoUpdate.getInfo("", "", potentialMetadataJSONObject);
                     } else {
+                        if (metaInfo[0].contains("StreamUrl")) {
+                            metaInfo[0] = metaInfo[0].replace("StreamUrl", "");
+                        }
                         streamInfoUpdate.getInfo(metaInfo[0], "", null);
                     }
                 } else {

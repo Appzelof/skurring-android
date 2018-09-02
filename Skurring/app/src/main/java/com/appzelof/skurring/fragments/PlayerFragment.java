@@ -177,24 +177,43 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
                 viewString += potentialMetadataJSONObject.getArtist();
             }
             if (!potentialMetadataJSONObject.getImageUrl().equals("")) {
-                this.imageDownloader = new ImageDownloader();
-                this.imageDownloader.imageDownloaded = this;
+                initializeImageDownloader();
                 this.imageDownloader.downloadImageFromPureUrl(potentialMetadataJSONObject.getImageUrl());
             }
             this.songView.setText(viewString);
         } else {
             if (!album.equals("") && !artist.equals("")) {
                 viewString += album + " - " + artist;
+                initializeImageDownloader();
+                this.imageDownloader.downloadImageFromParts(artist, album);
                 this.songView.setText(viewString);
             } else {
+                initializeImageDownloader();
+                this.imageDownloader.downloadImageFromPart(album);
                 this.songView.setText(album);
             }
         }
     }
 
+    private void initializeImageDownloader() {
+        this.imageDownloader = new ImageDownloader();
+        imageDownloader.imageDownloaded = this;
+    }
+
     @Override
     public void imageDownloaded(Bitmap imageDownloaded) {
         this.albumImage.setImageBitmap(imageDownloaded);
+    }
+
+    @Override
+    public void imageJSONURL(String url) {
+        //Not needed. have to implement it.
+    }
+
+    @Override
+    public void errorGettingImageFromJSON() {
+        //When there is no image available from JSON
+        this.albumImage.setImageResource(android.R.color.transparent);
     }
 
 

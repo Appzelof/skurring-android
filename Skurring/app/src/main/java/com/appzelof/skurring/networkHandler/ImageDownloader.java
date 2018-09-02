@@ -10,10 +10,11 @@ import com.appzelof.skurring.Interfaces.ImageDownloaded;
 import java.io.InputStream;
 import java.net.URL;
 
-public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
+public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> implements ImageDownloaded {
 
     public ImageDownloaded imageDownloaded;
     private String imageUrl;
+    private FetchImageJSON fetchImageJSON;
 
     public void downloadImageFromPureUrl(String pureImageUrl) {
         this.imageUrl = pureImageUrl;
@@ -21,13 +22,29 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
     }
 
     public void downloadImageFromParts(String artist, String album) {
-        getImageJSON(artist, album);
+        fetchImageJSON = new FetchImageJSON(this, createItunesEndpoint(artist, album));
+        fetchImageJSON.execute();
     }
 
-    private void getImageJSON(String artist, String album) {
-        String imageUrlFromJSON = "";
-
+    public void downloadImageFromPart(String part) {
+        String[] parts = {"", ""};
+        if (part.contains(" - ")) {
+            parts = part.split(" - ");
+        } else {
+            if (part.contains("-")) {
+                parts = part.split("-");
+            }
+        }
+        fetchImageJSON = new FetchImageJSON(this, createItunesEndpoint(parts[0], parts[1]));
+        fetchImageJSON.execute();
     }
+
+    private String createItunesEndpoint(String artist, String album) {
+        final String itunesSongUrl = "https://itunes.apple.com/search?term=" + artist + "+" + album + "&entity=song";
+        System.out.println("ITUNES URL : " + itunesSongUrl);
+        return "https://itunes.apple.com/search?term=" + artist + "+" + album + "&entity=song";
+    }
+
     private Bitmap getRezizedBitmap(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -64,5 +81,21 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
     protected void onPostExecute(Bitmap bitmap) {
         super.onPostExecute(bitmap);
         this.imageDownloaded.imageDownloaded(this.getRezizedBitmap(bitmap));
+    }
+
+    @Override
+    public void imageDownloaded(Bitmap imageDownloaded) {
+        //Not actually needed, but have to implement.
+    }
+
+    @Override
+    public void imageJSONURL(String url) {
+        this.imageUrl = url;
+        this.execute();
+    }
+
+    @Override
+    public void errorGettingImageFromJSON() {
+        this.imageDownloaded.errorGettingImageFromJSON();
     }
 }
