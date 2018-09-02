@@ -71,9 +71,7 @@ public class FetchImageJSON extends AsyncTask<Void, Void, StringBuilder> {
                         String imageUrl = (String) firstPossibleAlbum.get("artworkUrl100");
                         String[] urlParts = imageUrl.split("/source/");
                         if (urlParts.length > 1) {
-                            String firstPart = urlParts[0];
-                            String curstomLastPart = "/source/1000x1000bb.jpg";
-                            String finalString = firstPart + curstomLastPart;
+                            String finalString = urlParts[0] + "/source/1000x1000bb.jpg";
                             this.imageDownloaded.imageJSONURL(finalString);
                         }
 

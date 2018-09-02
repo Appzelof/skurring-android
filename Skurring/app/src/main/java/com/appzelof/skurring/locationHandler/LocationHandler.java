@@ -43,7 +43,6 @@ public class LocationHandler {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         geocoder = new Geocoder(context, Locale.getDefault());
         sharePrefsManager = new SharePrefsManager(context);
-
     }
 
     public void getLastKnownLocation(final Activity activity){

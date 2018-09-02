@@ -23,11 +23,9 @@ public class MyMediaPlayer implements MediaPlayer.OnPreparedListener {
     private MediaPlayer mediaPlayer;
     private String chosenRadioChannel;
     public StreamInfoUpdate streamInfoUpdate;
-    private ArrayList<String> metadataList;
 
     public void initAndPrepareAndPlay(String url) {
         mediaPlayer = new MediaPlayer();
-        metadataList = new ArrayList<>();
         this.chosenRadioChannel = url;
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnPreparedListener(this);
@@ -77,7 +75,6 @@ public class MyMediaPlayer implements MediaPlayer.OnPreparedListener {
     };
 
     private void extractData(String info) {
-        this.metadataList.clear();
         String[] metaInfo = {"1", "2"};
         boolean isJson = false;
         boolean pureInfo = false;
