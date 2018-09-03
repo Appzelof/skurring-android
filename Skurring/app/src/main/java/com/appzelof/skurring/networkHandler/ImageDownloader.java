@@ -45,19 +45,6 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> implements Im
         return "https://itunes.apple.com/search?term=" + artist + "+" + album + "&entity=song";
     }
 
-    private Bitmap getRezizedBitmap(Bitmap bitmap) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-
-        float scaleWidth = ((float) 50) / width;
-        float scaleHeight = ((float) 50) / width;
-
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
-    }
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -80,7 +67,7 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> implements Im
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         super.onPostExecute(bitmap);
-        this.imageDownloaded.imageDownloaded(this.getRezizedBitmap(bitmap));
+        this.imageDownloaded.imageDownloaded(bitmap);
     }
 
     @Override

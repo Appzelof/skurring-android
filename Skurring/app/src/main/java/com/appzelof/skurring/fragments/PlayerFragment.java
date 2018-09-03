@@ -1,6 +1,7 @@
 package com.appzelof.skurring.fragments;
 
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
@@ -59,6 +60,7 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
     private Boolean checked;
     private static String WEATHER_URL;
     private ImageDownloader imageDownloader;
+    public MyMediaPlayer mediaPlayer;
 
 
     private GoogleApiClient googleApiClient;
@@ -98,9 +100,9 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
         this.setupUI(v);
         this.initUI();
         initializeBtns();
-        MyMediaPlayer.INSTANCE = new MyMediaPlayer();
-        MyMediaPlayer.INSTANCE.initAndPrepareAndPlay(this.choosenRadioStation.getUrl());
-        MyMediaPlayer.INSTANCE.streamInfoUpdate = this;
+        this.mediaPlayer = new MyMediaPlayer();
+        mediaPlayer.initAndPrepareAndPlay(this.choosenRadioStation.getUrl());
+        mediaPlayer.streamInfoUpdate = this;
         locationHandler = new LocationHandler(getContext(), this);
         locationHandler.getLastKnownLocation(getActivity());
         sharePrefsManager = new SharePrefsManager(getContext());
@@ -283,4 +285,8 @@ public class PlayerFragment extends Fragment implements StreamInfoUpdate, Update
 
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 }

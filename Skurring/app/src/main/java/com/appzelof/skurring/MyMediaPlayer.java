@@ -19,10 +19,11 @@ import java.util.List;
 
 public class MyMediaPlayer implements MediaPlayer.OnPreparedListener {
 
-    public static MyMediaPlayer INSTANCE;
     private MediaPlayer mediaPlayer;
     private String chosenRadioChannel;
     public StreamInfoUpdate streamInfoUpdate;
+
+    public MyMediaPlayer(){}
 
     public void initAndPrepareAndPlay(String url) {
         mediaPlayer = new MediaPlayer();

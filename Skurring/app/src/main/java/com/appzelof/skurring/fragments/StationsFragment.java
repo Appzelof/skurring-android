@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.appzelof.Enums.DataToAdapterFrom;
+import com.appzelof.skurring.Enums.DataToAdapterFrom;
 import com.appzelof.skurring.networkHandler.InternetAccessChecker;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLiteFirebase.DatabaseManager;
@@ -37,6 +37,7 @@ public class StationsFragment extends Fragment {
     private RadioStationAdapter radioStationAdapter;
     private ArrayList<RadioObject> radioStations;
     private InternetAccessChecker internetAccessChecker;
+    public RecyclerView recyclerView;
 
     public StationsFragment() {
         // Required empty public constructor
@@ -116,7 +117,7 @@ public class StationsFragment extends Fragment {
                         radioObject.initFromFirebase(radioStation);
                         radioStations.add(new RadioObject().initFromFirebase(radioStation));
                     }
-
+                    radioStationAdapter.updateData(radioStations);
                     initializeRadioStationAdapter(DataToAdapterFrom.FIREBASE, handleSQLiteList().get(0));
                     radioStationAdapter.notifyDataSetChanged();
                 }
@@ -186,13 +187,16 @@ public class StationsFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.scrollToPosition(LinearLayoutManager.HORIZONTAL);
 
-        RecyclerView recyclerView = v.findViewById(R.id.my_recycler_view);
+        recyclerView = v.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(radioStationAdapter);
 
     }
 
-
-
+    @Override
+    public void onDestroyView() {
+        this.recyclerView.setAdapter(null);
+        super.onDestroyView();
+    }
 }

@@ -50,7 +50,7 @@ public class MainFragment extends Fragment {
     public StationsFragment stationsFragment;
     public static int changingRadioChannel = 0;
     private ArrayList<RadioObject> radioList;
-
+    public PlayerFragment playerFragment;
 
 
     public MainFragment() {
@@ -93,8 +93,8 @@ public class MainFragment extends Fragment {
     public void onResume() {
         super.onResume();
         this.updateUI();
-        if (MyMediaPlayer.INSTANCE != null && MyMediaPlayer.INSTANCE.getMediaPlayer() != null) {
-            MyMediaPlayer.INSTANCE.stopMediaPlayerAndMetadataRecording();
+        if (this.playerFragment.mediaPlayer != null && this.playerFragment.mediaPlayer.getMediaPlayer() != null) {
+            this.playerFragment.mediaPlayer.stopMediaPlayerAndMetadataRecording();
         }
     }
 
@@ -138,7 +138,6 @@ public class MainFragment extends Fragment {
             imageButtonSparseArray.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    PlayerFragment playerFragment = new PlayerFragment();
                     RadioObject radioObject = searchForClickedRadiostation(choosenRadioStation);
                     if (radioObject != null) {
                         playerFragment.choosenRadioStation = radioObject;

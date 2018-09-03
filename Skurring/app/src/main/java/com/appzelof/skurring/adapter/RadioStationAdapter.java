@@ -16,6 +16,7 @@ import com.appzelof.skurring.holder.RadioViewHolder;
 import com.appzelof.skurring.model.RadioObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class RadioStationAdapter extends RecyclerView.Adapter<RadioViewHolder> {
     private ArrayList<RadioObject> radioObjectArrayList;

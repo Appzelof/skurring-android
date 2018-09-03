@@ -6,11 +6,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.appzelof.Enums.DataToAdapterFrom;
+import com.appzelof.skurring.Enums.DataToAdapterFrom;
 import com.appzelof.skurring.Interfaces.UpdateMainFragmentUI;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLite.DatabaseManager;
 import com.appzelof.skurring.fragments.MainFragment;
+import com.appzelof.skurring.fragments.PlayerFragment;
 import com.appzelof.skurring.fragments.StationsFragment;
 
 import com.appzelof.skurring.sharePrefsManager.SharePrefsManager;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements UpdateMainFragmen
         mainFragment.stationsFragment = new StationsFragment();
         mainFragment.stationsFragment.initializeRadioStationAdapter(DataToAdapterFrom.INAPP, null);
         mainFragment.stationsFragment.getRadioStationAdapter().updateMainFragmentUI = this;
+        mainFragment.playerFragment = new PlayerFragment();
         DatabaseManager.INSTANCE = new DatabaseManager(this.getBaseContext());
 
         com.appzelof.skurring.SQLiteFirebase.DatabaseManager.INSTANCE = new com.appzelof.skurring.SQLiteFirebase.DatabaseManager(this.getBaseContext());
@@ -71,12 +73,18 @@ public class MainActivity extends AppCompatActivity implements UpdateMainFragmen
 
     @Override
     public void onBackPressed() {
+        if (mainFragment.stationsFragment.isVisible()) {
+            mainFragment.stationsFragment.onDestroyView();
+            System.out.println("SHOULD DESTROY FRAGMENT");
+        } else {
+            mainFragment.playerFragment.onDestroyView();
+        }
         super.onBackPressed();
-
     }
 
     @Override
     public void updateUI() {
+        super.onBackPressed();
         this.replaceFragment(mainFragment, FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
     }
 
