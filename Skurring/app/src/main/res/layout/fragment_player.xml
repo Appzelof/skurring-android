@@ -14,6 +14,25 @@
         android:layout_height="match_parent"
         android:background="@drawable/ripple">
 
+        <ImageView
+            android:id="@+id/albumImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@android:color/transparent"
+            tools:layout_editor_absoluteX="47dp"
+            tools:layout_editor_absoluteY="38dp" />
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.7"
+            android:background="@android:color/black"
+            tools:layout_editor_absoluteX="5dp"
+            tools:layout_editor_absoluteY="5dp">
+
+        </android.support.constraint.ConstraintLayout>
+
         <ProgressBar
             android:id="@+id/degreesProgressBar2"
             style="?android:attr/progressBarStyle"
@@ -140,7 +159,7 @@
             android:textColor="@android:color/white"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/albumImage"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -171,16 +190,6 @@
             app:layout_constraintEnd_toStartOf="@+id/speedometerImage"
             app:layout_constraintTop_toTopOf="@+id/speedometerImage"
             app:layout_constraintVertical_bias="0.0" />
-
-        <ImageView
-            android:id="@+id/albumImage"
-            android:layout_width="31dp"
-            android:layout_height="32dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 
