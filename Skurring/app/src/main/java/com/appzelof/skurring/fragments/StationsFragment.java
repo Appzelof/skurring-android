@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.appzelof.skurring.Enums.DataToAdapterFrom;
+import com.appzelof.skurring.enums.DataToAdapterFrom;
 import com.appzelof.skurring.networkHandler.InternetAccessChecker;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLiteFirebase.DatabaseManager;

@@ -95,8 +95,10 @@ public class LocationHandler {
         try {
 
                 List<Address> addresses = geocoder.getFromLocation(lat, lon, 1);
-                String subAdminArea = addresses.get(0).getSubAdminArea();
-                updateLocationInfo.updateAdminArea(subAdminArea);
+                if (addresses.size() != 0) {
+                    String subAdminArea = addresses.get(0).getSubAdminArea();
+                    updateLocationInfo.updateAdminArea(subAdminArea);
+                }
 
 
         } catch (IOException e){

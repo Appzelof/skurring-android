@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.appzelof.skurring.Enums.DataToAdapterFrom;
+import com.appzelof.skurring.enums.DataToAdapterFrom;
 import com.appzelof.skurring.Interfaces.UpdateMainFragmentUI;
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.SQLite.DatabaseManager;
