@@ -10,7 +10,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String RADIONAME = "radioName";
     public static final String RADIOIMAGE = "radioImage";
     public static final String RADIOURL = "radioUrl";
-    public static final String CHOOSENRADIOSPOT = "choosenRadioSpot";
+    public static final String CHOSENRADIOSPOT = "chosenRadioSpot";
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "RadioStations.db";
@@ -18,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_CREATE = "create table " + TABLE_NAME + "(" + RADIONAME +
             " varchar(255) not null, " + RADIOIMAGE +
             " int not null, " + RADIOURL +
-            " varchar(255) not null, " + CHOOSENRADIOSPOT + " int not null);";
+            " varchar(255) not null, " + CHOSENRADIOSPOT + " int not null);";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

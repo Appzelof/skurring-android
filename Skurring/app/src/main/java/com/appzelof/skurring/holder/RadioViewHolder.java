@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.appzelof.skurring.R;
+import com.squareup.picasso.Picasso;
 
 public class RadioViewHolder extends RecyclerView.ViewHolder{
 
@@ -19,7 +20,7 @@ public class RadioViewHolder extends RecyclerView.ViewHolder{
     }
 
     public void updateUI(int image, String channel) {
-        radioImage.setImageResource(image);
+        Picasso.get().load(image).into(radioImage);
         radioText.setText(channel);
     }
 

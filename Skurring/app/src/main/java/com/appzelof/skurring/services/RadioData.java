@@ -1,5 +1,7 @@
 package com.appzelof.skurring.services;
 
+import android.support.v4.content.res.TypedArrayUtils;
+
 import com.appzelof.skurring.R;
 import com.appzelof.skurring.model.RadioObject;
 
@@ -12,7 +14,6 @@ import java.util.ArrayList;
 public class RadioData {
     private static final RadioData ourInstance = new RadioData();
 
-    ArrayList<RadioObject> radioArrayList;
 
     public static RadioData getInstance() {
         return ourInstance;
@@ -23,7 +24,7 @@ public class RadioData {
 
     public ArrayList<RadioObject> getRadioInfoList(){
 
-        radioArrayList = new ArrayList<>();
+        ArrayList<RadioObject> radioArrayList = new ArrayList<>();
 
         radioArrayList.add(new RadioObject("NRK MP3" ,"http://lyd.nrk.no/nrk_radio_mp3_mp3_h", R.drawable.nrk_mp3));
         radioArrayList.add(new RadioObject("NRK Klassisk","http://lyd.nrk.no/nrk_radio_klassisk_mp3_h",R.drawable.nrk_klassisk));

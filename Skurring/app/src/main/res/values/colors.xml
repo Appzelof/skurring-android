@@ -6,4 +6,6 @@
     <color name="black">#000000</color>
     <color name="white">#ffff</color>
     <color name="dimGray">#6b6b6b</color>
+    <color name="cold">#03a7ff</color>
+    <color name="warm">#f2754e</color>
 </resources>
